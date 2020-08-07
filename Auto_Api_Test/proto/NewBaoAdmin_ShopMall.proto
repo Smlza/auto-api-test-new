@@ -1,0 +1,610 @@
+//新包包运营管理台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+
+syntax = "proto3";
+package proto;
+import "NewBao_Common.proto";
+import "NewBaoAdmin_Common.proto";
+import "NewBaoAdmin_Enum.proto";
+option go_package = ".;proto";
+
+//取消订单 POST /admin/cancelOrder
+message TSAdminCancelOrderRequest {
+    string orderID = 1;
+}
+message TSAdminCancelOrderResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//管理台确定收货 POST /admin/confirmReceive
+message TSAdminConfirmReceiptRequest {
+    string orderID = 1;
+}
+message TSAdminConfirmReceiptResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//管理台开始质检 POST /admin/startCheck
+message TSAdminStartQualityRequest {
+    string orderID = 1;
+}
+message TSAdminStartQualityResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//管理台质检成功/结果 POST /admin/checkResult
+message TSAdminQualityResultRequest {
+    string orderID = 1;
+    string action = 2; //@"SUCCESS" @"FAIL"
+}
+message TSAdminQualityResultResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//管理台鉴定成功/结果 POST /admin/appraisalResult
+message TSAdminAppraisalResultRequest {
+    string orderID = 1;
+    string action = 2; //@"SUCCESS" @"FAIL" @"UNKNOWN"(无法鉴定)
+}
+message TSAdminAppraisalResultResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//管理台寄回卖家 POST /admin/deliverToSeller
+message TSAdminSendBackSellerRequest {
+    string expressNo = 1; //寄回卖家快递单号
+    string orderID = 2;
+}
+message TSAdminSendBackSellerResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//管理台发货买家 POST /admin/deliverToBuyer
+message TSAdminSendToBuyerRequest {
+    string expressNo = 1; //发货买家快递单号
+    string orderID = 2;
+}
+message TSAdminSendToBuyerResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//商品反馈记录
+//主页列表
+// message TSAdminFeedBackListRequest {
+//     int32 pageNum = 1;  // 默认1
+//     int32 pageSize = 2; // 默认10
+//     int32 status = 3; // 0 已添加 1 待处理 2 暂不处理  （可选 查询接口使用）
+// }
+// message TSAdminFeedBackListResponse {
+//     int32 errorCode = 1;
+//     string errorMsg = 2;
+//     repeated FeedBackItem feedBackList = 3;
+// }
+// //商品反馈中 立即添加 按钮
+// message TSAdminAddProductInfoRequest {
+//     int32 productID = 1; 
+// }
+// message TSAdminAddProductInfoResponse {
+//     int32 errorCode = 1;
+//     string errorMsg = 2;
+// }
+// //暂不处理
+// message TSAdminTempNotHandleRequest {
+//     int32 productID = 1; 
+// }
+// message TSAdminTempNotHandleResponse {
+//     int32 errorCode = 1;
+//     string errorMsg = 2;
+// }
+
+//库存管理
+//主页列表 POST /admin/stockList
+message TSAdminStockListRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string productCode = 3; //可选 商品编码 （可选项查询使用 - 支持模糊搜索）
+    string productName = 4; //可选 商品名称
+    int32 kind = 5; //可选 品类id
+    int32 brand = 6; //可选 品牌id
+    int32 status = 7; //可选 0 已上架 1 已下架
+}
+message TSAdminStockListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated StockList stockList = 3;
+    bool isEnd = 4;
+}
+
+//品类下拉框
+message TSAdminStockKindListRequest {
+}
+message TSAdminStockKindListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated CategoryInfo kindInfo = 3; //库存品类下拉框列表
+}
+//品牌下拉框（级联品类）
+message TSAdminStockBrandListRequest {
+    int32 kindID = 1; //品类ID
+}
+message TSAdminStockBrandListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated CategoryInfo brandInfo = 3; //库存品牌下拉框列表（级联品类）
+}
+
+//库存详情
+//库存商品列表 POST /admin/stockDetailList
+message TSAdminStockDetailListRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string pid = 3; //可选 商品pid （可选项查询使用 - 支持模糊搜索）
+    int32 size = 4; //可选 尺码缩写
+    int32 news = 5; //可选 成色
+    string sellerPhone = 6; //卖家手机号
+    string state = 7; //可选 "0"待出价 "1"出售中 "2"已出售 "3"临时下架 "4"永久下架
+}
+message TSAdminStockDetailListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated StockDetailInfo stockDetailList = 3;
+    int32 totalCount = 4; // 数据总条数
+}
+
+//尺码下拉框
+message TSAdminStockDetailSizeRequest {
+    int32 kindID = 1;
+}
+message TSAdminStockDetailSizeResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SizeInfo sizeInfos = 3; //库存详情尺码下拉框列表
+}
+
+//成色下拉框
+message TSAdminStockDetailColourRequest {
+    int32 kindID = 1;
+}
+message TSAdminStockDetailColourResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated NewsInfo newsInfos = 3; //库存详情成色下拉框列表
+}
+
+//商品详情 POST /admin/productDetail
+message TSAdminStockProductDetailRequest {
+    string pid = 1;
+}
+message TSAdminStockProductDetailResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string oaid = 3; //鉴定单号
+    ProductBaseInfo productInfo = 4; // 商品基本信息
+    SellerProductInfo sellerProduct = 5; // 卖家商品信息
+    SellerBackAddressInfo sellerAddress = 6; // 卖家寄回地址
+}
+
+//商品操作记录
+message TSAdminStockDetailProductHandleRecordRequest {
+    int32 productID = 1;
+}
+message TSAdminStockDetailProductHandleRecordResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated StockDetailProductHandleRecord stockDetailProductHandleRecord = 3; //操作记录
+}
+
+//商品下架 POST /admin/productDown
+message TSAdminStockDetailProductOffShelfRequest {
+    string pid = 1;
+}
+message TSAdminStockDetailProductOffShelfResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 轮播Banner管理
+// Banner list POST /admin/giantBannerList
+message TSAdminGiantBannerListRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string state = 3; //状态 "0"停用 "1"待生效 "2"生效中 "3"已失效
+    string pageBelong = 4; //页面归属，"0"精选首页，"1"鉴定首页，"2"服务首页
+    string jumpType = 5; //跳转类型, "0"小程序，"1"H5
+}
+message TSAdminGiantBannerListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated GiantBannerItem itemList = 3; //Banner列表项
+    message GiantBannerItem {
+        int32 bannerID = 1; //bannerID
+        string pageBelong = 2; //页面归属，"0"精选首页，"1"鉴定首页，"2"服务首页
+        string jumpType = 3; //跳转类型, "0"小程序，"1"H5
+        string imgUrl = 4; //图片url
+        string jumpLink = 5; //跳转地址
+        string state = 6; //状态 "0"停用 "1"待生效 "2"生效中 "3"已失效
+        string startTime = 7; //显示开始时间
+        string endTime = 8; //显示结束时间
+        int32 ranking = 9; //排序值
+        string createTime = 10; //创建时间
+    }
+    int32 totalCount = 4; //总条数
+}
+
+// 轮播Banner 新增 POST /admin/giantBannerPublish
+message TSAdminGiantBannerPublishRequest {
+    string pageBelong = 1; //页面归属，"0"精选首页，"1"鉴定首页，"2"服务首页
+    string jumpType = 2; //跳转类型, "0"小程序，"1"H5
+    string banner = 3; // 图片url
+    string jumpLink = 4; //跳转链接
+    string startTime = 5; //生效时间
+    string endTime = 6; //结束时间
+    int32 ranking = 7; //排序值
+}
+message TSAdminGiantBannerPublishResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 轮播Banner 修改 POST /admin/giantBannerModify
+message TSAdminGiantBannerModifyRequest {
+    int32 bannerID = 1;
+    string pageBelong = 2; //页面归属，"0"精选首页，"1"鉴定首页，"2"服务首页
+    string jumpType = 3; //跳转类型, "0"小程序，"1"H5
+    string banner = 4; // 图片url
+    string jumpLink = 5;
+    string startTime = 6;
+    string endTime = 7;
+    int32 ranking = 8;
+}
+message TSAdminGiantBannerModifyResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 轮播Banner 操作（删除。停用） POST /admin/giantBannerOperate
+message TSAdminGiantBannerOperateRequest {
+    int32 bannerID = 1;
+    string operation = 2; //"0" 删除, "1" 停用, "2" 启用
+}
+message TSAdminGiantBannerOperateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 订单管理 POST /admin/orderList
+message TSAdminTradeOrderListRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string orderNo = 3; // 订单编号
+    string buyerPhone = 4;
+    string sellerPhone = 5;
+    string state = 6; // "0"为待买家付款，"1"为待卖家发货，"2"为卖家发货至平台，"3"为平台已收货，"4"为平台质检中，"5"为平台鉴定中，"6"为待平台发货，"7"为平台已发货买家，"8"为交易成功，"9"为交易关闭
+    string sellerExpressNo = 7; // 卖家物流单号
+}
+message TSAdminTradeOrderListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AdminOrderBrief itemList = 3;
+    int32 totalCount = 4;
+}
+
+// 订单详情 POST /admin/orderDetail
+message TSAdminTradeOrderDetailRequest {
+    string orderNo = 1; // 订单号
+}
+message TSAdminTradeOrderDetailResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    AdminBaseOrderInfo baseOrder = 3; // 订单基本信息
+    BuyerAddressInfo buyerAddress = 4; // 买家收货地址
+    ProductBaseInfo productInfo = 5; // 商品基本信息
+    SellerProductInfo sellerProduct = 6; // 卖家商品信息
+    SellerBackAddressInfo sellerAddress = 7; // 卖家寄回地址
+}
+
+// 商品操作日志 POST /admin/productLog
+message TSAdminProductLogRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string pid = 3;
+}
+message TSAdminProductLogResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AdminLogInfo logList = 3;
+    int32 totalCount = 4;
+}
+
+// 订单操作日志 POST /admin/orderLog
+message TSAdminOrderLogRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string orderNo = 3;
+}
+message TSAdminOrderLogResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AdminLogInfo logList = 3;
+    int32 totalCount = 4;
+}
+
+// 钱包管理 POST /admin/walletFlow
+// 列表（默认不显示数据，只有搜索后显示）
+message TSAdminWalletListRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string userPhone = 3; // 用户手机号 搜索列表用
+}
+message TSAdminWalletListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string userPhone = 3; //用户手机号
+    string userName = 4; // 昵称
+    int32 walletOverage = 5; // 钱包余额
+    string recipientAccount = 6; // 收款账户
+    repeated WalletDetailItem walletDetailList = 7; // 钱包明细
+    int32 totalCount = 8;
+}
+
+// 解绑 POST /admin/removeAlipayAccount
+message TSAdminRemoveBindRequest {
+    string recipientAccount = 1; // 收款账户
+}
+message TSAdminRemoveBindResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 交易流水管理 POST /admin/tradeFlowList
+// 列表（默认不显示数据，只有搜索后显示）
+message TSAdminTradeFlowListRequest {
+    int32 pageNum = 1; // 默认1
+    int32 pageSize = 2; // 默认10
+    string tradeType = 3; // 交易类型 "0"购物支付 "1"购物退款 "2"鉴定支付 "3"鉴定退款 "4"钱包提现
+    string tradeChannel = 4; // 交易渠道 "0"支付宝 "1"微信-实物 "2"微信-虚拟
+    string tradeState = 5; // 交易状态 "0"未执行 "1"成功 "2"失败
+    string userPhone = 6; // 用户手机号
+    string startTime = 7; // 开始时间 （确认到时分秒，时间跨度不超过3个月）格式 YYYY-mm-dd HH:MM:SS
+    string endTime = 8; // 结束时间 格式 YYYY-mm-dd HH:MM:SS
+}
+message TSAdminTradeFlowListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 income = 3; // 入账
+    int32 outcome = 4; // 出账
+    repeated TradeFlowItem tradeFlowList = 5; // 交易流水
+    int32 totalCount = 6;
+}
+
+// 提现 POST /admin/withdraw
+message TSAdminWithdrawRequest {
+    string flowNum = 1; // 流水号
+}
+message TSAdminWithdrawResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 手动打款提现框 POST /admin/withdrawTip
+message TSAdminWithdrawTipRequest {
+    string flowNum = 1; // 流水号
+}
+message TSAdminWithdrawTipResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string tradeMoney = 3;
+    string alipayAccount = 4;
+    string alipayRealName = 5;
+}
+
+// 手动打款 POST /admin/withdrawManually
+message TSAdminWithdrawManuallyRequest {
+    string flowNum = 1; // 流水号
+    string channelSerialNo = 2; // 商户交易流水号
+}
+message TSAdminWithdrawManuallyResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 退款 POST /admin/refund
+message TSAdminRefundRequest {
+    string flowNum = 1; // 流水号
+}
+message TSAdminRefundResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 商品发布反馈记录列表页 POST /admin/publishFeedbackList
+message AdminPublishFeedbackListRequest {
+    AdminPublishFeedbackEnum state = 1;
+    int32 pageNum = 2;
+    int32 pageSize = 3;
+}
+message AdminPublishFeedbackListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AdminPublishFeedback feedBackList = 3;
+    int32 totalCount = 4;
+}
+
+// 商品发布反馈记录-暂不处理 POST /admin/feedbackNotProcess
+message AdminPublishFeedbackNotProcessRequest {
+    string feedbackNum = 1; // 反馈ID
+}
+message AdminPublishFeedbackNotProcessResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 商品发布反馈记录-商品详情 POST /admin/feedbackProductDetail
+message AdminPublishFeedbackProductDetailRequest {
+    string feedbackNum = 1; // 反馈ID
+}
+message AdminPublishFeedbackProductDetailResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    FeedbackProductBaseInfo productBaseInfo = 3;
+    SellerBackAddressInfo backAddress = 4;
+    repeated ShootImageInfo imageList = 5;
+}
+
+// 商品反馈记录-商品发布后台信息 POST /admin/tempProductInfo
+message AdminProductPublishInfoRequest {
+    string feedbackNum = 1; // 反馈ID
+}
+message AdminProductPublishInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string feedbackNum = 3; // 反馈ID
+    string sellerPhone = 4;
+    int32 brandID = 5;
+    int32 newDegreeID = 6;
+    int32 sellPrice = 7;
+    repeated ShootImageInfo imageList = 8;
+    string sendWord = 9;
+    SellerBackAddressInfo backAddress = 10;
+    string pid = 11;
+    repeated SelectItem brandList = 12; // 可选的品牌列表
+    repeated SelectItem newDegreeList = 13; // 可选的成色列表
+    repeated PointInfo pointInfo = 14; //发布点信息
+}
+
+// 商品反馈记录-发布 POST /admin/finishPublish
+message AdminPublishProductFromTempRequest {
+    string pid = 1;
+    int32 brandID = 2;
+    string sku = 3;
+    int32 newDegreeID = 4;
+    int32 sellPrice = 5;
+    repeated ShootImageInfo imageList = 6;
+    string sendWord = 7;
+}
+message AdminPublishProductFromTempResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//运营管理台 商品发布页信息请求 POST /admin/publishProductInfo
+message TSManagementPublishProductInfoRequest {
+    int32 kindID = 1;
+}
+message TSManagementPublishProductInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated CategoryInfo categoryInfo = 3; //品牌列表
+    repeated PointInfo pointInfo = 4; //发布点信息
+    repeated NewsInfo newList = 5; //成色
+}
+
+//运营管理台 商品发布请求 POST /admin/publishProduct
+message TSManagementPublishProductRequest {
+    string phone = 1;
+    string newsName = 2; //成色名
+    int32 newsID = 3; //成色ID
+    repeated string images = 4; //用户上传的图 必须大于0 不能超过20个
+    string sendWord = 5; //用户寄语 需要检测是否合格，不超过1000个字符
+    int32 sellPrice = 6; //售卖价格，必须为整型，且大于0小于一亿。当onSell=Yes，该值不可为空
+    string sku = 7; //挂载sku 需要后端进行校验
+}
+message TSManagementPublishProductResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string pid = 3; //商品pid
+}
+
+// 小程序管理 小程序信息列表页 @token_required POST /admin/microAppList
+message TSMicroAppListRequest {
+    string name = 1; // 小程序名，模糊搜索
+    int32 pageNum = 2;
+    int32 pageSize = 3;
+}
+message TSMicroAppListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+
+    message MicroAppInfo {
+        string appletCode = 1;
+        string name = 2;
+        string platform = 3; // "0"微信，"1"字节
+        string appId = 4;
+        int32 recordId = 5;
+    }
+
+    repeated MicroAppInfo infoList = 3;
+    int32 totalCount = 4;
+}
+
+// 小程序管理 小程序信息详情 @token_required POST /admin/microAppDetail
+message TSMicroAppDetailRequest {
+    int32 recordId = 1;
+}
+message TSMicroAppDetailResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string appletCode = 3;
+    string name = 4;
+    string platform = 5; // "0"微信，"1"字节
+    string appId = 6;
+    string appSecret = 7;
+    string mainBody = 8;
+    string openUrl = 9;
+    string note = 10;
+}
+
+// 小程序管理 小程序新增 @token_required POST /admin/microAppAdd
+message TSMicroAppAddRequest {
+    string appletCodeB64 = 1; // 图片base64数据
+    string name = 2;
+    string platform = 3; // "0"微信，"1"字节
+    string appId = 4;
+    string appSecret = 5;
+    string mainBody = 6;
+    string openUrl = 7;
+    string note = 8;
+}
+message TSMicroAppAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 小程序管理 小程序修改 @token_required POST /admin/microAppModify
+message TSMicroAppModifyRequest {
+    string appletCodeB64 = 1;
+    string name = 2;
+    string platform = 3; // "0"微信，"1"字节
+    string appId = 4;
+    string appSecret = 5;
+    string mainBody = 6;
+    string openUrl = 7;
+    string note = 8;
+    int32 recordId = 9;
+}
+message TSMicroAppModifyResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 小程序管理 获取access_token @token_required POST /admin/microAppAccessToken
+message TSMicroAppGetAccessTokenRequest {
+    string appId = 1;
+}
+message TSMicroAppGetAccessTokenResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string accessToken = 3;
+}

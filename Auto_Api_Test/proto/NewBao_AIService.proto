@@ -1,0 +1,352 @@
+//新包包后台 网络协议
+//
+//AI服务模块
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+
+
+syntax = "proto3";
+package proto;
+
+import "NewBao_Common.proto";
+import "NewBao_Enum.proto";
+
+option go_package = ".;proto";
+
+//识包分类信息请求 POST /aiservice/classifyCategory
+message TSClassifyCategoryRequest {
+    CategoryEnum categoryEnum = 1;
+    string categoryKey = 2;
+}
+message TSClassifyCategoryResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated CategoryInfo categoryInfos = 3;
+}
+
+//识包请求 POST /aiservice/classify
+message TSAIClassifyRequest {
+    string imgB64 = 1;
+    string classifyKey = 2;
+}
+message TSAIClassifyResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2; //10023未检测到识别点 10024识别点不在货号库中 10025检测到包但算法无法匹配图片
+    repeated ClassifiedObject objects = 3;
+    CoordinateInfo coordinate = 4;
+
+}
+
+//鉴定分类信息请求 POST /aiservice/appraisalCategoryList
+message TSAppraisalCategoryRequest {
+    CategoryEnum categoryEnum = 1;
+    string categoryKey = 2;
+}
+message TSAppraisalCategoryResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated CategoryInfo categoryInfos = 3;
+}
+
+// 鉴定点数据请求 @token_required POST /aiservice/appraisalPointList
+message TSAppraisalPointsRequest {
+    string queryKey = 1; // 对应层级的查询的key
+}
+message TSAppraisalPointsResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated PointInfo pointInfos = 3; //鉴定点数据
+}
+
+// 单个鉴定点鉴定请求 @token_required POST /aiservice/singleAppraisal
+message TSSinglePointAppraisalRequest {
+    string pointKey = 1; //鉴定点key
+    string imgB64 = 2; //鉴定点图片的base64 默认PNG
+}
+message TSSinglePointAppraisalResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2; //10027检测不通过 10028拒绝鉴定
+    string said = 3; //鉴定凭据
+}
+
+//外观鉴定点上传请求 POST /aiservice/uploadExterior
+message TSProductExteriorAppraisalRequest {
+    string imgB64 = 1; //鉴定点图片的base64 默认PNG
+}
+message TSProductExteriorAppraisalResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string exteriorUrl = 3; //外观图片上传
+}
+
+// 鉴定结果请求--通过SAID(single appraisal id)得到 @token_required POST /aiservice/appraisalResult
+message TSGenAppraisalResultRequest {
+    repeated string saidList = 1; //鉴定点SAID集合;
+    string exteriorUrl = 2; //外观图片url
+}
+message TSGenAppraisalResultResponse {
+    int32 errorCode = 1; //10029获取整体鉴定结果出错统一错误码 10034整体集成逻辑无法鉴定，需要走人工鉴定
+    string errorMsg = 2;
+    string oaid = 3; //鉴定号
+    bool authenticity = 4; //整体的真实性
+    string grade = 5; //鉴定的分数
+    string evaluation = 6; //整体评价 非AIService功能
+    string exteriorUrl = 7; //外观图片url
+    repeated SingleAppraisalResult singleAppraisalResults = 8;
+}
+
+// 鉴定结果请求--通过OAID(overall appraisal id)得到 @token_required POST /aiservice/appraisalResultList
+message TSQueryAppraisalResultRequest {
+    string oaid = 1;
+}
+message TSQueryAppraisalResultResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string oaid = 3; //鉴定号
+    bool authenticity = 4; //整体的真实性
+    string grade = 5; //鉴定的分数
+    string evaluation = 6; //整体评价 非AIService功能
+    string exteriorUrl = 7; //外观图片url
+    repeated SingleAppraisalResult singleAppraisalResults = 8;
+}
+
+//查询鉴定记录列表 @token_required POST /aiservice/briefAppraisalResults
+message TSQueryOAIDListRequest {
+    int32 pageNum = 1; // 默认为1
+    int32 pageSize = 2; // 默认为10
+}
+message TSQueryOAIDListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated BriefAppraisalResult results = 3;
+    bool isEnd = 4;
+}
+
+//根据pid查询对应品类及品牌的鉴定记录表
+message TSQueryOAIDListWithPidRequest {
+    int32 pageNum = 1; // 默认为1
+    int32 pageSize = 2; // 默认为10
+    string pid = 3;
+}
+message TSQueryOAIDListWithPidResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated BriefAppraisalResult results = 3;
+    bool isEnd = 4;
+}
+
+//鉴定首页 POST /aiservice/servicePage
+message TSAIServicePageRequest {
+}
+message TSAIServicePageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 appraisalCount = 4; //鉴定总数
+    int32 classifyCount = 5; //识包总数
+}
+
+//鉴定首页 POST /aiservice/homePage
+message TSAppraisalHomePageRequest {
+}
+message TSAppraisalHomePageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated CarouselItem banner = 3; //banner图片
+    int32 appraisalCount = 4; //鉴定总数
+    int32 fakeRate = 5; // 周假货比例
+    repeated BrandRate fakeRanks = 6; //排名前5的假的鉴定品牌
+    repeated BrandRate realRanks = 7; //排名前5的真的鉴定品牌
+}
+
+//鉴定首页---精选鉴定 POST /aiservice/selectedAppraisal
+message TSSelectedAppraisalRequest {
+    int32 pageNum = 1; // 默认为1
+    int32 pageSize = 2; // 默认为10
+}
+message TSSelectedAppraisalResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SelectedAppraisalRecord selectedAppraisalRecord = 3;
+    bool isEnd = 4;
+}
+
+// v2-AI服务首页 POST /aiservice/v2/serviceHomePage
+message TSAIServiceServiceHomePageRequest {
+}
+message TSAIServiceServiceHomePageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 appraisalCount = 4; //鉴定总数
+    int32 classifyCount = 5; //识包总数
+    repeated CarouselItem banner = 6; //banner图片
+}
+
+// v2-鉴定分类信息请求--品类 POST /aiservice/v2/appraisalKinds
+message TSAIServiceAppraisalKindsRequest {
+}
+message TSAIServiceAppraisalKindsResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AIServiceCategoryInfo kindInfos = 3;
+}
+
+// v2-鉴定分类信息请求--品牌 POST /aiservice/v2/appraisalBrands
+message TSAIServiceAppraisalBrandsRequest {
+    int32 kindID = 1;
+}
+message TSAIServiceAppraisalBrandsResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AIServiceCategoryInitial brandInfos = 3;
+    repeated AIServiceCategoryInfo hotBrands = 4; // 热门品牌
+}
+
+// v2-鉴定分类信息请求--系列 POST /aiservice/v2/appraisalSeries
+message TSAIServiceAppraisalSeriesRequest {
+    int32 brandID = 1;
+}
+
+message TSAIServiceAppraisalSeriesResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AIServiceCategoryInitial seriesInfos = 3;
+}
+
+// v2-鉴定点数据请求 @token_required POST /aiservice/v2/appraisalPointList
+message TSAIServiceAppraisalPointsRequest {
+    CategoryEnum categoryEnum = 1; // 对应层级
+    int32 categoryID = 2;  // 品牌/系列id
+}
+message TSAIServiceAppraisalPointsResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AIServicePointInfo pointInfos = 3; //鉴定点数据
+    string buttonText = 4; // 鉴定按钮文案
+    bool ticketActivity = 5; // 邀新返鉴定券活动开关
+    string activityURL = 6; // 邀新活动页URL
+    string activityName = 7; // 邀新活动名称
+}
+
+// v2-单个鉴定点鉴定请求 @token_required POST /aiservice/v2/singleAppraisal
+message TSAIServiceSinglePointAppraisalRequest {
+    int32 pointID = 1; // 鉴定点id
+    string imgUrl = 2; // 鉴定点图片的url
+}
+message TSAIServiceSinglePointAppraisalResponse {
+    int32 errorCode = 1; // 10027 检测不通过  10028 拒绝鉴定
+    string errorMsg = 2; 
+    string said = 3; // 鉴定凭据
+    AIServiceAppraisalBox originalBox = 5; // 图⽚原有尺⼨(width*height)
+    AIServiceAppraisalBox detectionBox = 6; // 原有尺⼨中crop框左上⻆frame(x,y,w,h)
+}
+
+// v2-鉴定结果请求--通过SAID(single appraisal id)得到 @token_required POST /aiservice/v2/appraisalResult
+message TSAIServiceGenAppraisalResultRequest {
+    repeated string saidList = 1; // 鉴定点SAID集合;
+    string exteriorUrl = 2; // 外观图片url
+}
+message TSAIServiceGenAppraisalResultResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string orderNo = 3; // 鉴定订单号
+    bool needPay = 4; // 是否需要付款
+    string OAID = 5; // 鉴定编号
+}
+
+// v2-支付订单(微信小程序微信支付)  POST /aiservice/v2/wechatMiniProgramUnifiedOrder
+message TSAIServiceWechatProductPayRequest {
+    string orderNumber = 1; //订单单号
+    string openid = 2; // 从code2Session接口中取
+}
+message TSAIServiceWechatProductPayResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string package = 3;
+    string nonceStr = 4; //随机字符串
+    string timestamp = 5; //时间戳
+    string paySign = 6; //签名，签名方式一定要与统一下单接口使用的一致
+    string signType = 7;
+}
+
+// v2-鉴定结果反馈信息查询 POST /aiservice/v2/appraisalFeedbackList
+message TSAIServiceGenAppraisalFeedbackListRequest {
+}
+message TSAIServiceGenAppraisalFeedbackListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated string feedbackList = 3; // 反馈意见
+}
+
+// v2-鉴定结果反馈 @token_required POST /aiservice/v2/appraisalFeedback
+message TSAIServiceGenAppraisalFeedbackRequest {
+    string orderNo = 1; // 鉴定订单号
+    string feedback = 2; // 反馈意见
+}
+message TSAIServiceGenAppraisalFeedbackResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// v2-邀新返券活动banner @token_required POST /aiservice/v2/ticketActivityBanner
+message TSAIServiceTicketActivityBannerRequest {
+} 
+message TSAIServiceTicketActivityBannerResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    bool ticketActivity = 3; // 启停状态； false 停用 true 启用
+    string imageURL = 4; // 活动banner图片URL
+    string activityURL = 5; // 跳转页面URL
+}
+
+// v2-鉴定订单列表 @token_required POST /aiservice/v2/appraisalOrderList
+message TSAIServiceGenAppraisalOrderListRequest {
+    int32 pageNum = 1; // 默认为1
+    int32 pageSize = 2; // 默认为10
+    AIServiceAppraisalOrderStateEnum state = 3;
+} 
+message TSAIServiceGenAppraisalOrderListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AIServiceOrder order = 3; // 鉴定订单
+    bool isEnd = 4;
+}
+
+// v2-鉴定报告 POST /aiservice/v2/appraisalReport 
+message TSAIServiceGenAppraisalReportRequest {
+    string OAID = 1; // 鉴定编号
+}
+message TSAIServiceGenAppraisalReportResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string exteriorUrl = 3; // 外观图片URL
+    string orderNo = 4; // 鉴定订单号
+    string OAID = 5; // 整鉴鉴定号
+    string genuine = 6; // 鉴定结果 0 假 1 真 2 未知
+    string hierarchy = 7;
+    int32 kindID = 8;
+    string kindName = 9;
+    int32 brandID = 10;
+    string brandName = 11;
+    int32 seriesID = 12;
+    string seriesName = 13;
+    string appraisalTime = 14; // 鉴定时间 格式 YYYY-mm-dd HH:MM:SS
+    string description = 15;  // 整体评价
+    string grade = 16; // 整鉴得分
+    repeated AIServiceAppraisalReportSAItem SARecordList = 17;
+    AIServiceAppraisalBox originalBox = 18; // 图⽚原有尺⼨(width*height)
+    AIServiceAppraisalBox detectionBox = 19; // 原有尺⼨中crop框左上⻆frame(x,y,w,h)
+}
+
+// 获取鉴定报告小程序码 POST  /aiservice/v2/appraisalReportWXACode
+message TSAIServiceAppraisalReportWXACodeRequest {
+    string scene = 1; // 路径参数
+    string  page = 2; // 页面路径
+  }
+  
+  message TSAIServiceAppraisalReportWXACodeResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    bytes imgData = 3;
+  }

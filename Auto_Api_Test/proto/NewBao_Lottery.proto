@@ -1,0 +1,107 @@
+//新包包后台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+syntax = "proto3";
+package proto;
+
+import "NewBao_Common.proto";
+option go_package = ".;proto";
+
+// 抽奖管理
+// 抽奖池   POST /lottery/getDrawLotteryPoolList
+message TSDrawLotteryPoolInfoListRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string name = 3; // 活动名称
+    string lotteryStatus = 4; // 抽奖状态  1已抽奖  2未抽奖
+    string status = 5; // 生效状态  1待生效、2生效中、3已失效、4停用
+}
+
+message TSDrawLotteryPoolInfoListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated LotteryPoolItem lotteryPoolInfo = 3;
+    int32 totalCount = 4;
+}
+
+// 新增活动/抽奖池  POST /lottery/createDrawLotteryPool
+message TSDrawLotteryInfoRequest {
+    string activityName = 1; // 活动名称
+    string lotteryPic = 2; //奖品池图片
+    string lotteryStartTime = 3; // 抽奖开始时间
+    string lotteryEndTime = 4; // 抽奖结束时间
+    int32 lotteryNum = 5; // 可抽奖次数
+    string lotteryUserStr = 6; // 抽奖人员  111,123,124
+}
+
+message TSDrawLotteryInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 获取 抽奖池详情  POST /lottery/getDrawLotteryPool
+message TSDrawLotteryPoolInfoRequest {
+    int32 Id = 1; // 抽奖池Id
+}
+
+message TSDrawLotteryPoolInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    LotteryPoolItem lotteryPoolInfo = 3;
+}
+
+
+// 新增抽奖人员  POST /lottery/createDrawLotteryUser
+message TSDrawLotteryUserInfoRequest {
+    int32 lotteryPoolId = 1; // 抽奖池Id
+    string lotteryUserStr = 2; // 抽奖人员  111,123,124
+}
+
+message TSDrawLotteryUserInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 获取 抽奖池人员信息列表  POST /lottery/getDrawLotteryUser
+message TSDrawLotteryUserInfoListRequest {
+    int32 lotteryPoolId = 1; // 抽奖池Id
+    string phone = 2; // 手机号
+    int32 pageNum = 4; //默认1
+    int32 pageSize = 5; //默认10
+    string status = 6;  // 是否中奖  获取详情 1 没有中奖 2 中奖
+}
+
+message TSDrawLotteryUserInfoListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated UserPoolItem userPoolInfo = 4;
+    int32 totalCount = 5;
+}
+
+// 停用 抽奖池  POST /lottery/stopDrawLotteryPool
+message TSDrawLotteryRequest {
+    int32 lotteryPoolId = 1; // 抽奖池Id
+    string newStatus = 2; // 新状态  1 停用 2 启用
+}
+
+message TSDrawLotteryResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 抽奖  POST /lottery/getDrawLotteryPoolUser
+message TSDrawLotteryUserRequest {
+    int32 lotteryPoolId = 1; // 抽奖池Id
+}
+
+message TSDrawLotteryUserResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string phone = 3;
+}
+
+// test

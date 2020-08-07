@@ -1,0 +1,838 @@
+//新包包运营管理台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  
+// 联调地址： http://basic-cms.turingsenseai.com/
+// 开发地址：
+syntax = "proto3";
+package proto;
+
+import "NewBaoAdmin_Common.proto";
+
+option go_package = ".;proto";
+
+//品类管理
+//一级品类
+//列表(包含可选项 - 查询用) POST /v1/base/kind/get
+message TSAdminKindListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    string categoryName = 3; //品类名称 可选
+    string state = 4; //状态   1 停用 2 启用
+    string serviceApplication = 5; //服务  1 商城 2 ai鉴定 3 ai识图 4 ai估价
+}
+message TSAdminKindListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated KindItem kindList = 3;
+    int32 totalCount = 4;
+}
+//一级品类新增    POST /v1/base/kind
+message TSAdminKindAddRequest {
+    string kindStr = 1;  //一级品类名称
+    string kindCoverUrl = 2; //一级品类封面url
+    string sequence = 3; //排序值
+    string serviceMall =4;  //服务应用-商城 2 启用 1禁用
+    string serviceAiAuthenticate =5;  //服务应用-ai鉴定 2 启用 1禁用
+    string serviceAiReadMap =6;  //服务应用-ai识图 2 启用 1禁用
+    string serviceAiEvaluate =7;  //服务应用-ai估价 2 启用 1禁用
+
+}
+message TSAdminKindAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//一级品类修改   POST /v1/base/kind/update
+message TSAdminKindEditRequest {
+    string kindStr = 1;  //一级品类名称
+    string kindCoverUrl = 2; //一级品类封面url
+    string sequence = 3; //排序值
+    int32 kindID = 4; //一级品类ID
+    string serviceMall =5;  //服务应用-商城 2 启用 1禁用
+    string serviceAiAuthenticate =6;  //服务应用-ai鉴定 2 启用 1禁用
+    string serviceAiReadMap =7;  //服务应用-ai识图 2 启用 1禁用
+    string serviceAiEvaluate =8;  //服务应用-ai估价 2 启用 1禁用
+}
+message TSAdminKindEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//一级品类停启用  POST  /v1/base/stop/kind
+message TSAdminKindSwitchStateRequest {
+    int32 kindID = 1;  //一级品类id
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdminKindSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//二级品类
+//列表(包含可选项 - 查询用)  POST /v1/base/secondkind/get
+message TSAdminSecondKindListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    int32 kindID = 3; //一级品类id 可选
+    int32 secondKindID = 4; //二级品类id 可选
+    string state = 5; //状态   1 停用 2 启用
+}
+message TSAdminSecondKindListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SecondKindItem secondKindList = 3;
+    int32 totalCount = 4;
+}
+//二级品类新增   POST /v1/base/secondkind
+message TSAdminSecondKindAddRequest {
+    int32 kindID = 1;  //一级品类id
+    string secondKindName = 2;  //二级品类名称
+    string sequence = 3; //排序值
+}
+message TSAdminSecondKindAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//二级品类修改   POST /v1/base/secondkind/update
+message TSAdminSecondKindEditRequest {
+    int32 kindID = 1;  //一级品类id
+    string secondKindName = 2;  //二级品类名称
+    string sequence = 3; //排序值
+    int32 secondKindID = 4; //二级品类ID
+}
+message TSAdminSecondKindEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//二级品类停启用   POST  /v1/base/stop/secondkind
+message TSAdminSecondKindSwitchStateRequest {
+    int32 secondKindID = 1;  //二级品类id
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdminSecondKindSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//三级品类
+//列表(包含可选项 - 查询用)   POST /v1/base/thirdkind/get
+message TSAdminThirdKindListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    int32 kindID = 3; //一级品类id 可选
+    int32 secondKindID = 4; //二级品类id 可选
+    int32 thirdKindID = 5; //三级品类id 可选
+    string state = 6; //状态 状态   1 停用 2 启用
+}
+message TSAdminThirdKindListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated ThirdKindItem thirdKindList = 3;
+    int32 totalCount = 4;
+}
+//三级品类新增   POST /v1/base/thirdkind
+message TSAdminThirdKindAddRequest {
+    int32 kindID = 1;  //一级品类id
+    int32 secondKindID = 2;  //二级品类id
+    string thirdKindName = 3;  //三级品类名称
+    string sequence = 4; //排序值
+}
+message TSAdminThirdKindAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//三级品类修改  POST /v1/base/thirdkind/update
+message TSAdminThirdKindEditRequest {
+    int32 kindID = 1;  //一级品类id
+    int32 secondKindID = 2;  //二级品类id
+    string thirdKindName = 3;  //三级品类名称
+    string sequence = 4; //排序值
+    int32 thirdKindID = 5; //三级品类ID
+}
+message TSAdminThirdKindEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//三级品类停启用    POST  /v1/base/stop/thirdkind
+message TSAdmintThirdKindSwitchStateRequest {
+    int32 thirdKindID = 1;  //三级品类id
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdmintThirdKindSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//品牌管理
+//列表(包含可选项 - 查询用)  POST /v1/base/brand/get
+message TSAdminBrandListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    string brandName = 3; //品牌英文名 可选
+    string brandEnName = 4; //品牌中文名 可选
+    int32 kindID = 5; //一级品类id 可选
+    string state = 6; //状态 状态   1 停用 2 启用
+    string serviceApplication = 7; //服务  1 商城 2 ai鉴定 3 ai识图 4 ai估价
+    string hot = 8; //热门  1 商城 2 ai鉴定 3 ai识图 4 ai估价
+}
+message TSAdminBrandListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated BrandItem brandList = 3;
+    int32 totalCount = 4;
+}
+//品牌新增    POST /v1/base/brand
+message TSAdminBrandAddRequest {
+    int32  kindID = 1;  //一级品类id
+    string brandEnName = 2; //品牌英文名
+    string brandName = 3; //品牌中文名
+    string brandCoverUrl = 4; //品牌封面url
+    string brandIntroduction = 5; //品牌介绍
+    string serviceMall =6;  //服务应用-商城 2 启用 1禁用
+    string serviceAiAuthenticate =7;  //服务应用-ai鉴定 2 启用 1禁用
+    string serviceAiReadMap =8;  //服务应用-ai识图 2 启用 1禁用
+    string serviceAiEvaluate =9;  //服务应用-ai估价 2 启用 1禁用
+    string hotMall =10;  //热门-商城 2 启用 1禁用
+    string hotAiAuthenticate =11;  //热门-ai鉴定 2 启用 1禁用
+    string hotAiReadMap =12;  //热门-ai识图 2 启用 1禁用
+    string hotAiEvaluate =13;  //热门-ai估价 2 启用 1禁用
+}
+message TSAdminBrandAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//品牌修改    POST /v1/base/brand/update
+message TSAdminBrandEditRequest {
+    int32 kindID = 1;  //一级品类id
+    string brandEnName = 2; //品牌英文名
+    string brandName = 3; //品牌中文名
+    string brandCoverUrl = 4; //品牌封面url
+    string brandIntroduction = 5; //品牌介绍
+    string serviceMall =6;  //服务应用-商城 2 启用 1禁用
+    string serviceAiAuthenticate =7;  //服务应用-ai鉴定 2 启用 1禁用
+    string serviceAiReadMap =8;  //服务应用-ai识图 2 启用 1禁用
+    string serviceAiEvaluate =9;  //服务应用-ai估价 2 启用 1禁用
+    string hotMall =10;  //热门-商城 2 启用 1禁用
+    string hotAiAuthenticate =11;  //热门-ai鉴定 2 启用 1禁用
+    string hotAiReadMap =12;  //热门-ai识图 2 启用 1禁用
+    string hotAiEvaluate =13;  //热门-ai估价 2 启用 1禁用
+    int32 brandID = 14; //品牌id
+}
+message TSAdminBrandEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//品牌停启用   POST  /v1/base/stop/brand
+message TSAdmintBrandSwitchStateRequest {
+    int32 brandID = 1;  //品牌id
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdmintBrandSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//系列管理
+//列表(包含可选项 - 查询用)  POST /v1/base/series/get
+message TSAdminSeriesListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    string seriesName = 3; //系列名 可选
+    string brandEnName = 4; //品牌中文名 可选
+    int32 kindID = 5; //一级品类id 可选
+    string state = 6; //状态 状态   1 停用 2 启用
+    string serviceApplication = 7; //服务  1 商城 2 ai鉴定 3 ai识图 4 ai估价
+}
+message TSAdminSeriesListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SeriesItem seriesList = 3;
+    int32 totalCount = 4;
+}
+//系列新增   POST /v1/base/series
+message TSAdminSeriesAddRequest {
+    int32 kindID = 1;  //一级品类id
+    string brandEnName = 2; //品牌英文名
+    string seriesName = 3; //系列名称
+    string seriesCoverUrl = 4; //系列封面url
+    string seriesIntroduction = 5; //系列介绍
+    int32 brandID = 6; //品牌ID
+    string serviceMall =8;  //服务应用-商城 2 启用 1禁用
+    string serviceAiAuthenticate =9;  //服务应用-ai鉴定 2 启用 1禁用
+    string serviceAiReadMap =10;  //服务应用-ai识图 2 启用 1禁用
+    string serviceAiEvaluate =11;  //服务应用-ai估价 2 启用 1禁用
+}
+message TSAdminSeriesAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//系列修改   POST /v1/base/series/update
+message TSAdminSeriesEditRequest {
+    int32 kindID = 1;  //一级品类id
+    string brandEnName = 2; //品牌英文名
+    string seriesName = 3; //系列名称
+    string seriesCoverUrl = 4; //系列封面url
+    string seriesIntroduction = 5; //系列介绍
+    int32 brandID = 6; //品牌ID
+    int32 seriesID = 7; //系列ID
+    string serviceMall =8;  //服务应用-商城 2 启用 1禁用
+    string serviceAiAuthenticate =9;  //服务应用-ai鉴定 2 启用 1禁用
+    string serviceAiReadMap =10;  //服务应用-ai识图 2 启用 1禁用
+    string serviceAiEvaluate =12;  //服务应用-ai估价 2 启用 1禁用
+}
+message TSAdminSeriesEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//系列停启用    POST  /v1/base/stop/series
+message TSAdmintSeriesSwitchStateRequest {
+    int32 seriesID = 1;  //系列id
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdmintSeriesSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+
+//颜色管理
+//列表(包含可选项 - 查询用)    POST /v1/base/color/get
+message TSAdminColorListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    string colorName = 3; //颜色名称 可选
+    string colorValue = 4; //颜色色值 可选
+    string state = 5; //状态 状态   1 停用 2 启用
+}
+message TSAdminColorListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated ColorItem colorList = 3;
+    int32 totalCount = 4;
+}
+//颜色新增    POST /v1/base/color
+message TSAdminColorAddRequest {
+    string colorName = 1; //颜色名称
+    string colorValue = 2; //颜色色值
+}
+message TSAdminColorAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//颜色修改   POST /v1/base/color/update
+message TSAdminColorEditRequest {
+    string colorName = 1; //颜色名称
+    string colorValue = 2; //颜色色值
+    int32 colorID = 3; //颜色色值
+}
+message TSAdminColorEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//颜色停启用   POST  /v1/base/stop/color
+message TSAdmintColorSwitchStateRequest {
+    int32 colorID = 1;  //颜色id
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdmintColorSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//尺码管理
+//列表(包含可选项 - 查询用)   POST  /v1/base/size/get
+message TSAdminSizeListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    string sizeName = 3; //尺码名称 可选
+    int32 kindID = 4; //一级品类id 可选
+    string state = 5; //状态 状态   1 停用 2 启用
+}
+message TSAdminSizeListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SizeItem sizeList = 3;
+    int32 totalCount = 4;
+}
+//尺码新增    POST  /v1/base/size
+message TSAdminSizeAddRequest {
+    int32 kindID = 1;  //一级品类id
+    string sizeName = 2; //尺码名称
+    string sequence = 3; //排序值
+}
+message TSAdminSizeAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//尺码修改     POST  /v1/base/size/update
+message TSAdminSizeEditRequest {
+    int32 kindID = 1;  //一级品类id
+    string sizeName = 2; //尺码名称
+    string sequence = 3; //排序值
+    int32 sizeId = 4; //尺码ID
+}
+message TSAdminSizeEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//尺码停启用    POST  /v1/base/stop/size
+message TSAdmintSizeSwitchStateRequest {
+    int32 sizeID = 1;  //尺码id
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdmintSizeSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//材质管理
+//列表(包含可选项 - 查询用)    POST  /v1/base/material/get
+message TSAdminMaterialListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    string materialName = 3; //材质名称 可选
+    string state = 4; //状态 状态   1 停用 2 启用
+}
+message TSAdminMaterialListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated MaterialItem materialList = 3;
+    int32 totalCount = 4;
+}
+//材质新增    POST  /v1/base/material
+message TSAdminMaterialAddRequest {
+    string materialName = 1; //材质名称
+}
+message TSAdminMaterialAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//材质修改    POST  /v1/base/material/update
+message TSAdminMaterialEditRequest {
+    string materialName = 1; //材质名称
+    int32 materialID = 2; //材质ID
+}
+message TSAdminMaterialEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//材质停启用   POST  /v1/base/stop/material
+message TSAdmintMaterialSwitchStateRequest {
+    int32 materialID = 1;  //材质id
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdmintMaterialSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//风格管理
+//列表(包含可选项 - 查询用)    POST  /v1/base/style/get
+message TSAdminStyleListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    string styleName = 3; //风格名称 可选
+    string state = 4; //状态 状态   1 停用 2 启用
+}
+message TSAdminStyleListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated StyleItem styleList = 3;
+    int32 totalCount = 4;
+}
+//风格新增   POST  /v1/base/style
+message TSAdminStyleAddRequest {
+    string styleName = 1; //风格名称
+}
+message TSAdminStyleAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//风格修改     POST  /v1/base/style/update
+message TSAdminStyleEditRequest {
+    string styleName = 1; //风格名称
+    int32 styleID = 2; //风格ID
+}
+message TSAdminStyleEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//风格停启用   POST  /v1/base/stop/style
+message TSAdmintStyleSwitchStateRequest {
+    int32 styleID = 1;  //风格id
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdmintStyleSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+
+//成色管理
+//列表(包含可选项 - 查询用)   POST /v1/base/newdegree/get
+message TSAdminNewsListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    string newsName = 3; //成色名称 可选
+    string state = 4; //状态 状态   1 停用 2 启用
+    int32 kindID = 5; //品类id
+}
+message TSAdminNewsListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated NewsItem newsList = 3;
+    int32 totalCount = 4;
+}
+//成色新增    POST /v1/base/newdegree
+message TSAdminNewsAddRequest {
+    int32 kindID = 1; //一级品类id
+    string newsName = 2; //成色名称
+    string newsBrief = 3; //成色简称
+    string sequence = 4; //排序值
+    string newsDescription = 5; //成色描述
+}
+message TSAdminNewsAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//成色修改   POST /v1/base/newdegree/update
+message TSAdminNewsEditRequest {
+    int32 kindID = 1; //一级品类id
+    string newsName = 2; //成色名称
+    string newsBrief = 3; //成色简称
+    string sequence = 4; //排序值
+    string newsDescription = 5; //成色描述
+    int32 newsID = 6; //成色ID
+}
+message TSAdminNewsEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//成色停启用     POST  /v1/base/stop/news
+message TSAdmintNewsSwitchStateRequest {
+    int32 newsID = 1;  //成色id
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdmintNewsSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//商品管理
+//列表(包含可选项 - 查询用)    POST  /v1/base/product/get
+message TSAdminProductListRequest {
+    int32 pageNum = 1;  //默认1
+    int32 pageSize = 2; //默认10
+    string skcID = 3; //商品编码 可选
+    string productName = 4; //商品名称 可选
+    int32 kindID = 5; //一级品类id 可选
+    int32 brandID = 6; //品牌id 可选
+    string state = 7; //状态 状态   1 停用 2 启用
+    string serviceApplication = 8; //服务  1 商城 2 ai鉴定 3 ai识图 4 ai估价
+}
+message TSAdminProductListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated ProductItem productList = 3;
+    int32 totalCount = 4;
+}
+//商品新增  POST  /v1/base/product
+message TSAdminProductAddRequest {
+    ProductBasicInformation productBasicInformation = 1; //商品基本信息
+    ProductAccessoryInformation productAccessoryInformation = 2; //商品附属信息
+}
+message TSAdminProductAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//商品修改   POST /v1/base/product/update
+message TSAdminProductEditRequest {
+    ProductBasicInformation productBasicInformation = 1; //商品基本信息
+    ProductAccessoryInformation productAccessoryInformation = 2; //商品附属信息
+    int32 productID = 3; //商品ID
+}
+message TSAdminProductEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//sku尺码表停启用   POST "/v1/base/stop/sku
+message TSAdminProductSkuSwitchStateRequest {
+    int32 skuID = 1; //后端生成到skuid 新增时不可修改状态  修改时可用
+    string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdminProductSkuSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+//商品状态 (停启用)   POST "/v1/base/stop/product
+message TSAdminProductSwitchStateRequest {
+   int32 productID = 1; //商品id
+   string newState = 2; //新的状态 2启用 1停用
+}
+message TSAdminProductSwitchStateResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//商品详情  POST /v1/base/product/details
+message TSAdminProductDetailRequest {
+    int32 productID = 1; //商品id
+    string skc = 2; //skc  // 通过 id 或者skc 获取到数据
+}
+message TSAdminProductDetailResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    ProductBasicInformation productBasicInformation = 3; //商品基本信息
+    ProductAccessoryInformation productAccessoryInformation = 4; //商品附属信息
+    int32 productID = 5; //商品ID
+}
+
+//通用
+//一级品类下拉框    POST  /v1/base/droplist/kind
+message TSAdminKindSelectRequest {
+    string comboxType = 1; // 区分状态 i
+}
+message TSAdminKindSelectResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated KindSelectItem kindSelectList = 3; //一级品类下拉框
+}
+//二级品类下拉框     POST  /v1/base/droplist/secondkind
+message TSAdminSecondKindSelectRequest {
+    int32 kindID = 1; //一级品类id
+    string comboxType = 2; // 区分状态
+}
+message TSAdminSecondKindSelectResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SecondKindSelectItem secondKindSelectList = 3; //一级品类下拉框
+}
+//三级品类下拉框    POST  /v1/base/droplist/thirdkind
+message TSAdminThirdKindSelectRequest {
+    int32 secondKindID = 1; //二级品类id
+    string comboxType = 2; // 区分状态
+}
+message TSAdminThirdKindSelectResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated ThirdKindSelectItem thirdKindSelectList = 3; //三级品类下拉框
+}
+//品牌下拉框   POST  /v1/base/droplist/brand
+message TSAdminBrandSelectRequest {
+    int32 kindID = 1; //一级品类id
+    string comboxType = 2; // 区分状态
+}
+message TSAdminBrandSelectResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated BrandSelectItem brandSelectList = 3; //三级品类下拉框
+}
+//系列下拉框    POST  /v1/base/droplist/series
+message TSAdminSeriesSelectRequest {
+    int32 brandID = 1; //品牌id
+    string comboxType = 2; // 区分状态
+}
+message TSAdminSeriesSelectResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SeriesSelectItem seriesSelectList = 3; //系列下拉框
+}
+//尺寸下拉框    POST  /v1/base/droplist/size
+message TSAdminSizeSelectRequest {
+    int32 kindID = 1; //品类id
+    string comboxType = 2; // 区分状态
+}
+message TSAdminSizeSelectResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SizeSelectItem sizeSelectList = 3; //系列下拉框
+}
+// 尺寸 风格 材质 颜色 综合信息列表 (整合到一个接口)       POST /v1/base/choose
+message TSAdminComprehensiveInfoListRequest {
+}
+message TSAdminComprehensiveInfoListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SizeItem sizeList = 3; //尺寸
+    repeated StyleItem styleList = 4; //风格
+    repeated MaterialItem materialList = 5; //材质
+    repeated ColorItem colorList = 6; //颜色
+}
+//商品删除图片    POST  /v1/base/product/delete
+message TSAdminProductUrlDeleteRequest {
+    int32 urlID = 1; //urlID
+}
+message TSAdminProductUrlDeleteResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 登录   POST  /admin/login
+message TSAdminLoginRequest{
+    string username = 1; //用户名
+    string password = 2; //前端加密后的密文
+}
+message TSAdminLoginResponse{
+    int32 errorCode = 1; //错误码，0成功
+    string errorMsg = 2; //错误信息
+    string token = 3; //返回token
+    bool init = 4; //是否首次登录判断位，true为首次登陆
+}
+
+
+// 修改密码   POST  @token_required  /admin/modifyPassword
+message TSAdminModifyPasswordRequest{
+  bool init = 1; //是否为首次登陆修改密码
+  string originPassword = 2; //原密码，首次登陆时该字段置空，通过init判断是否为首次登陆
+  string modifiedPassword = 3; //修改后的密码
+  string modifiedPasswordConfirm = 4; //确认新密码(再次输入新密码)
+}
+message TSAdminModifyPasswordResponse{
+  int32 errorCode = 1; //错误码
+  string errorMsg = 2; //错误信息
+}
+
+// 注册用户   @token_required  POST     /admin/registerUser
+message TSAdminRegisterUserRequest{
+    string roleName = 1; //角色名
+    string username = 2; //用户名
+    string email = 3; //邮箱
+}
+message TSAdminRegisterUserResponse{
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 注册角色   @token_required   POST    /admin/registerRole
+message TSAdminRegisterRoleRequest{
+    int32 roleId = 1; //角色ID
+    string roleName = 2; //角色名
+}
+message TSAdminRegisterRoleResponse{
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 查询可用角色名列表  @token_required    POST    /admin/activeRoleList
+message TSAdminActiveRoleListRequest{
+}
+message TSAdminActiveRoleListResponse{
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated roleItem roleList = 3; //可用角色列表
+    message roleItem{
+        int32 roleId = 1;
+        string roleName = 2;
+    }
+
+}
+
+// 查询用户列表  @token_required  POST    /admin/userList
+message TSAdminUserListRequest{
+    string userName = 1; //用户名
+    string roleName = 2; //角色名
+    string state = 3; //"0"停用，"1"启用，"2"删除
+    int32 pageNum = 4;
+    int32 pageSize = 5;
+}
+message TSAdminUserListResponse{
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated UserDetail userDetails = 3;
+    message UserDetail{
+        int32 userId = 1; //用户ID
+        string username = 2; //用户名
+        int32 roleId = 3; //角色ID
+        string roleName = 4; //角色名
+        string email = 5; //邮箱
+        string state = 6; //"0"停用，"1"启用，"2"删除
+    }
+    int32 totalCount = 4; //总条数
+}
+
+// 查询角色列表  @token_required  POST    /admin/roleList
+message TSAdminRoleListRequest{
+    string roleName = 1; //角色名
+    string state = 2; //"0"停用，"1"启用，"2"删除
+    int32 pageNum = 3;
+    int32 pageSize = 4;
+}
+message TSAdminRoleListResponse{
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated RoleDetail roleDetails = 3;
+    message RoleDetail{
+        int32 roleId = 1; //角色ID
+        string roleName = 2; //角色名
+        string state = 3; //"0"停用，"1"启用，"2"删除
+    }
+    int32 totalCount = 4; //总条数
+}
+
+// 用户启用停用删除接口  @token_required  POST   /admin/userModifyState
+message TSAdminUserModifyStateRequest{
+    int32 userId = 1; //用户ID
+    string userName = 2; //用户名
+    int32 roleId = 3; //角色ID
+    string roleName = 4; //角色名
+    int32 action = 5; //1启用，2停用，3删除
+}
+message TSAdminUserModifyStateResponse{
+
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 角色启用停用删除接口  @token_required  POST   /admin/roleModifyState
+message TSAdminRoleModifyStateRequest{
+    int32 roleId = 1; //角色ID
+    string roleName = 2; //角色名
+    int32 action = 3; //1启用，2停用，3删除
+}
+message TSAdminRoleModifyStateResponse{
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 用户修改信息接口 @token_required  POST   /admin/userModify
+message TSAdminUserModifyRequest{
+    int32 userId = 1; //用户ID
+    int32 modifiedRoleId = 2; //修改后的角色ID
+    string modifiedUsername = 3; //修改后的用户名
+    string modifiedRoleName = 4; //修改后的角色名
+    string modifiedEmail = 5; //修改后的邮箱
+}
+message TSAdminUserModifyResponse{
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 角色修改接口  @token_required  POST   /admin/roleModify
+message TSAdminRoleModifyRequest{
+    int32 roleId = 1; //角色ID
+    string roleName = 2; //修改后的角色名
+}
+message TSAdminRoleModifyResponse{
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//商品AI删除图片    POST  /v1/base/product/aiDelete
+message TSAdminProductAiUrlDeleteRequest {
+    int32 urlID = 1; //urlID
+}
+message TSAdminProductAiUrlDeleteResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//获取图片url    POST  /v1/base/utils/uploadPicture
+message TSAdminProductGetUrlRequest {
+    string imgB64 = 1; // 64
+}
+message TSAdminProductGetUrlResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string exteriorUrl = 3; //外观图片上传
+}

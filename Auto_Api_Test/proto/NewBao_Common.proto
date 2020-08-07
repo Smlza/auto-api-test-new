@@ -1,0 +1,604 @@
+//新包包后台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+
+syntax = "proto3";
+package proto;
+
+import "NewBao_Enum.proto";
+
+option go_package = ".;proto";
+
+message ImageInfo {
+    string HDImage = 1;
+    string normalImage = 2;
+    string thumbImage = 3;
+}
+// 管理台 库存详情 商品详情 组图
+message StockProductDetailImgListInfo {
+    string HDImage = 1;
+    string normalImage = 2;
+    string thumbImage = 3;
+}
+
+message User {
+    string nickname = 1; // 昵称
+    string phone = 2; // 手机号
+    UserType userType = 3;
+    string sex = 4; //
+    string location = 5;
+    ImageInfo imageInfo = 6;
+    string weiboID = 7;
+    string wechatID = 8;
+    string appleID = 9;
+    string inviteID = 10;
+}
+
+message WallMaster {
+    string nickname = 1; // 昵称
+    ImageInfo imageInfo = 2;
+}
+
+message SingleWallStyle {
+    string name = 1; //墙风格的名称
+    ImageInfo image = 2;
+    int32 styleID = 3;
+    repeated WallPosition positionList = 4;
+}
+
+message Wall {
+    string wid = 1;
+    int32 likeCount = 2; //被收藏数
+    SingleWallStyle wallStyle = 3;
+    WallMaster master = 4;
+}
+
+message WallPosition {
+    int32 x = 1;
+    int32 y = 2;
+    int32 w = 3;
+    int32 h = 4;
+}
+
+//用户地址信息
+message UserAddress {
+    int32 addressID = 1; //地址id
+    string recipient = 2; //收件人名称
+    string phone = 3; //收件人手机号
+    string province = 4; //省
+    string city = 5; //市
+    string regions = 6; //区
+    string detailAddress = 7; //具体地址
+    bool isDefault = 8;
+}
+
+message CategoryInfo {
+    string name = 1; //名称
+    ImageInfo imageInfo = 2; //图片
+    string key = 3; //对应key/id
+    int32 categoryID = 4;
+    bool status = 5; //上线状态
+    bool isLast = 6; //是否为最后一级
+}
+
+message KindInfo {
+    string name = 1;
+    int32 kindID = 2;
+}
+
+//商品首字母结构体
+message BrandInitial {
+    string name = 1; //大写字母
+    repeated CategoryInfo brand = 2; //名称 对应id 自动过滤
+}
+
+//成色
+message NewsInfo {
+    string name = 1; //成色名称
+    int32 newsID = 2; //成色ID
+    string detail = 3; //成色详情
+    string brief = 4; //成色简介
+}
+
+// 尺码
+message SizeInfo {
+    int32 sizeID = 1;
+    string name = 2;
+}
+
+// 颜色
+message ColorInfo {
+    int32 colorID = 1;
+    string name = 2;
+    string hexValue = 3;
+}
+
+//买家显示的商品订单简介
+message BuyerBriefOrderInfo {
+    string orderID = 1; //订单编号
+    BuyerOrderListStateEnum buyerOrderListStateEnum = 2; //买家列表订单状态
+    string state = 3; //列表订单状态文案
+    string pid = 4; //商品Pid
+    string productTitle = 5; //商品标题
+    string image = 6; //商品封面图
+    int32 price = 7; //商品交易总额
+    string color = 8; //商品颜色标题
+    string size = 9; //商品尺码标题
+    string measurement = 10; //商品尺寸信息
+    string news = 11; //商品成色标题
+    repeated OrderButton orderButton = 12;
+}
+
+//卖家显示的订单简介（订单状态--待发货、已发货、交易成功、交易失败）
+message SellerBriefOrderInfo {
+    string orderID = 1; //订单编号
+    SellerOrderListStateEnum sellerOrderListStateEnum = 2; //卖家列表订单状态
+    string state = 3; //卖家列表订单状态文案
+    string pid = 4; //商品Pid
+    string productTitle = 5; //商品标题
+    string image = 6; //商品封面图
+    int32 price = 7; //商品交易总额
+    string color = 8; //商品所属颜色标题
+    string size = 9; //商品尺码标题
+    string measurement = 10; //商品尺寸标题
+    string news = 11; //商品成色名称标题
+    repeated OrderButton orderButton = 12;
+    string coldTimeLeft = 13; // 到买家冷静期结束剩余毫秒数
+}
+
+//卖家显示的商品简介（订单状态--出售中）
+message SellerBriefProductInfo {
+    string pid = 1; //商品Pid
+    SellerProductStateEnum sellerProductStateEnum = 2; //卖家出售中列表状态
+    string state = 3; //商品状态文案
+    string productTitle = 4; //商品标题
+    string image = 5; //商品封面图
+    int32 price = 6; //商品交易额
+    string color = 7; //商品所属颜色
+    string size = 8; //商品尺码标题
+    string measurement = 9; //商品尺寸标题
+    string news = 10; //商品成色名称标题
+    repeated OrderButton orderButton = 11;
+    string relatedOAID = 12; // 鉴定号
+    bool appraisalGenuine = 13; // 鉴定真假
+}
+
+// 卖家显示的商品详情
+message SellerProductDetailInfo {
+    string pid = 1; //商品Pid
+    SellerProductStateEnum sellerProductStateEnum = 2; //卖家出售中列表状态
+    string state = 3; //商品状态文案
+    string productTitle = 4; //商品标题
+    string image = 5; //商品封面图
+    int32 price = 6; //商品交易额
+    string color = 7; //商品所属颜色
+    string size = 8; //商品尺码标题
+    string measurement = 9; //商品尺寸标题
+    string news = 10; //商品成色名称标题
+    string relatedOAID = 11; // 鉴定号
+    bool appraisalGenuine = 12; // 鉴定真假
+    UserAddress returnAddress = 13; //卖家寄回地址
+    string serviceChargeRate = 14;
+    string transferFeeRate = 15; //支付手续费比例
+    int32 serviceCharge = 16; //平台服务费
+    int32 transferFee = 17; //支付手续费
+    string description = 18; //状态描述
+    string creatTime = 19; //创建时间
+    repeated OrderButton orderButton = 20;
+}
+
+message ShootImageInfo {
+    string position = 1;
+    string imageUrl = 2;
+    bool required = 3;
+    int32 imageID = 4;
+}
+
+message ProductOnSalePublishInfo {
+    string pid = 1;
+    repeated ShootImageInfo imageList = 2;
+    string productCover = 3; // 确认商品-商品图
+    string productName = 4;
+    string attribute = 5; // 商品属性
+    string sku = 6;
+    string newDegree = 7;
+    int32 kindID = 8;
+    string sendWord = 9;
+    int32 sellPrice = 10;
+    string serviceFeeRate = 11;
+    int32 serviceFee = 12;
+    string transferFeeRate = 13;
+    int32 transferFee = 14;
+    int32 actualIncome = 15;
+    UserAddress address = 16;
+    int32 brandID = 17;
+}
+
+//卖家显示的订单详情
+message SellerOrderDetailInfo {
+    string orderID = 1; //订单编号
+    SellerOrderListStateEnum sellerOrderListStateEnum = 2; //卖家列表订单状态
+    string state = 3; //卖家列表订单状态文案
+    string stateIntroduction = 4; //卖家列表订单状态详细介绍
+    string pid = 5; //商品Pid
+    string creatTime = 6; //订单创建时间
+    string productTitle = 7; //商品标题
+    string image = 8; //商品封面图
+    int32 price = 9; //商品交易总额
+    string color = 10; //商品所属颜色
+    string size = 11; //商品尺码标题
+    string measurement = 12; //商品尺寸标题
+    string news = 13; //商品成色名称标题
+    UserAddress returnAddress = 14; //卖家寄回地址
+    int32 serviceCharge = 15; //平台服务费
+    string serviceChargeRate = 16; //平台服务费比例
+    int32 transferFee = 17; //支付手续费
+    string transferFeeRate = 18; //支付手续费比例
+    ExpressRecord record = 19; //发货缩略事件
+    string expressNo = 20; //物流单号
+    int32 income = 21; //实际收入
+    repeated OrderButton orderButton = 22;
+    bool canModifyAddr = 23; // 能否修改地址
+    string buyerPayTimeout = 24; // 买家支付超时时间
+    string coldTimeLeft = 25; // 到买家冷静期结束剩余毫秒数
+    string deliverTimeout = 26; // 距离发货超时时间
+}
+
+//买家显示的订单详情
+message BuyerOrderDetailInfo {
+    string orderID = 1; //订单编号
+    BuyerOrderListStateEnum buyerOrderListStateEnum = 2; //买家列表订单状态
+    string state = 3; //买家列表订单状态文案
+    string stateIntroduction = 4; //买家列表订单状态详细介绍
+    string pid = 5; //商品Pid
+    string creatTime = 6; //订单创建时间
+    string productTitle = 7; //商品标题
+    string image = 8; //商品封面图
+    int32 price = 9; //商品交易总额
+    int32 freight = 10; //运费
+    int32 cost = 11; //实付金额
+    string color = 12; //商品所属颜色
+    string size = 13; //商品尺码标题
+    string measurement = 14; //商品尺寸标题
+    string news = 15; //商品成色名称标题
+    UserAddress receivingAddress = 16; //买家收货地址
+    repeated OrderButton orderButton = 17;
+    bool canModifyAddr = 18; // 能否修改地址
+    string payTimeout = 19; // 距离支付超时剩余毫秒数
+    string payType = 20; // 支付方式
+    string coldTimeLeft = 21; // 到冷静期结束剩余毫秒数
+    ExpressRecord record = 22; //发货缩略事件
+    string expressNo = 23; //物流单号
+}
+
+message Banner {
+    string bannerUrl = 1;
+    string link = 2;
+}
+
+//鉴定首页品牌占比例
+message BrandRate {
+    string brandName = 1;
+    int32 rate = 2; //占比
+}
+
+//精选鉴定
+message SelectedAppraisalRecord {
+    string nickname = 1; // 用户昵称
+    string avatar = 2; // 用户头像
+    string creatTime = 3; //鉴定订单创建时间
+    string brandName = 4; //品牌名称
+    bool authenticity = 5; //整体的真实性
+    repeated ImageInfo image = 6; //单个鉴定点图片数组 （第一个塞外观url）
+}
+
+//鉴定结果简介
+message BriefAppraisalResult {
+    bool authenticity = 1; //整体的真实性
+    string oaid = 2; //鉴定号
+    string brand = 3; //鉴定商品的品牌
+    string exteriorUrl = 4; //鉴定商品的外观图片url
+    string timestamp = 5; //鉴定报告生成时间
+}
+
+//坐标偏假信息
+message BiasedInfo {
+    repeated string grade = 1; //分数 长度为8
+}
+
+//单个鉴定点的鉴定结果
+message SingleAppraisalResult {
+    bool authenticity = 1; //单个鉴定点的真实性
+    string grade = 2; //单个鉴定点鉴定分数 整数
+    ImageInfo imageInfo = 3; //单个鉴定点图片url
+    repeated BiasedInfo biasedInfo = 4; //当前坐标分数 长度为8
+    string pointKey = 5;
+    string pointName = 6;
+}
+
+//单个鉴定点的鉴定信息
+message PointInfo {
+    bool necessity = 1; //是否为必选
+    string name = 2; //鉴定点名称
+    string pointKey = 3; //鉴定点key
+    string photoGuide = 4; //拍照文案
+    string exampleImg = 5; //拍照示例图
+    string stickFigureImg = 6; //简笔画小图
+    string bigStickFigureImg = 7; //浮层简笔画大图
+}
+
+
+// v2-品类/品牌/系列信息
+message AIServiceCategoryInfo {
+    string name = 1; // 名称
+    ImageInfo imageInfo = 2; // 图片
+    int32 categoryID = 3; // 对应id
+    bool isRelated = 4; // 是否关联鉴定点
+}
+
+// v2-品牌/系列首字母结构体
+message AIServiceCategoryInitial {
+    string letter = 1; // 大写字母
+    repeated AIServiceCategoryInfo categoryInfos = 2; 
+}
+
+
+// v2-坐标矩形框信息(x, y, width, height)
+message AIServiceAppraisalBox {
+    string x = 1; // x坐标
+    string y = 2; // y坐标
+    string width = 3; // 宽度
+    string height = 4; // 高度
+}
+
+// v2-单个鉴定点的鉴定信息
+message AIServicePointInfo {
+    bool necessity = 1; // 是否为重要鉴定点
+    string name = 2; // 鉴定点名称
+    int32 pointId = 3; // 鉴定点id
+    string photoGuide = 4; // 拍照文案
+    string exampleImg = 5; // 拍照示例图
+    string stickFigureImg = 6; // 简笔画小图
+    string bigStickFigureImg = 7; // 浮层简笔画大图
+}
+
+// v2-鉴定订单
+message AIServiceOrder {
+    string orderNo = 1; // 鉴定订单号
+    string OAID = 2; // 整鉴记录
+    string imageURL = 3; // 鉴定外观图片url
+    int32 totalAmount = 4; // 鉴定价格 单位为分
+    string time = 5; // 鉴定时间 格式“xxxx-xx-xx xx:xx:xx”
+    string hierarchy = 6;
+    int32 kindID = 7;
+    string kindName = 8;
+    int32 brandID = 9;
+    string brandName = 10;
+    int32 seriesID = 11;
+    string seriesName = 12;
+    AIServiceAppraisalOrderStateEnum state = 13; // 订单状态
+}
+
+// v2-鉴定报告单鉴定点明细
+message AIServiceAppraisalReportSAItem {
+    string SAID = 1; // 鉴定记录
+    string image = 2; // 鉴定图片url
+    string pointName = 3; // 鉴定点名称
+    string grade = 4; // 鉴定点得分
+    bool detection = 5; // 是否有detection结果
+    AIServiceAppraisalBox originalBox = 6; // 图⽚原有尺⼨(width*height)
+    AIServiceAppraisalBox detectionBox = 7; // 原有尺⼨中crop框左上⻆frame(x,y,w,h)
+    bool showFake = 8; // 是否需要展示偏假点的红圈圈
+    repeated AIServiceAppraisalBox fakePoints = 9;  // 偏假信息点展示,拆分成8*8的矩阵后，返回top3的鉴定点 例：[[3,4],[3,3],[3,3]]
+    string croppedImageURL = 10; // 切割检测目标的图片
+}
+
+//识别出的对象
+message ClassifiedObject {
+    string title = 1;
+    string name = 2;
+    string price = 3;
+    string imageUrl = 4;
+    string content = 5;
+    string itemID = 6; //货号值
+    string color = 7; //颜色
+    string size = 8; //尺码名称
+    string sizeID = 9; //尺码ID
+    string measurement = 10; //尺寸名称
+    string sku = 11; //商品的sku
+}
+
+message CoordinateInfo {
+    string x = 1;
+    string y = 2;
+    string w = 3;
+    string h = 4;
+}
+
+// 轮播图组件
+message CarouselItem {
+    string image = 1; //轮播图对应图片url
+    string link = 2; //对应跳转链接
+}
+
+//精选页商品简介信息
+message SelectedProductInfo {
+    string pid = 1;
+    string title = 2; //商品标题
+    string image = 3; //商品图片
+    string news = 4; //商品成色
+    int32 cost = 5; //商品原价 skc价格
+    string brand = 6; //商品品牌名
+    int32 price = 7; //商品售卖价格
+    string size = 8; // 商品尺码
+    string measurement = 9; // 商品尺寸
+    string relatedOaID = 10; // oaID
+}
+
+//商品详情页商品信息--用户上传信息
+message ProductUserUpload {
+    repeated ImageInfo imageInfo = 1; //用户上传的商品细节图
+    int32 cost = 2; //商品原价
+    int32 price = 3; //商品售卖价格
+    string brandName = 4; //商品售卖价格
+    string news = 5; //商品成色
+    string oaid = 6; //鉴定报告 假的就不要塞了
+    string story = 7; //用户寄语
+}
+
+//商品详情页商品信息--商品自带SKC信息
+message ProductBasicInfo {
+    string title = 1; //商品标题
+    string brand = 2; //商品对应品牌
+    string itemID = 3; //商品对应货号 暂时放弃
+    string releaseTime = 4; //商品发售时间
+    int32 releasePrice = 5; //商品发售价格
+    string color = 6; //商品对应颜色
+    string sizeInfo = 7; //尺码
+    string material = 8; //材质
+    repeated ImageInfo imageInfo = 9; //商品官方图
+    string measurement = 10; //尺寸名称
+    int32 kindID = 11; // 品类id
+    string kindName = 12; //品类名称
+    string styleName = 13; //风格
+}
+
+message PersonCenterIcon {
+    string iconTitle = 1; //icon的标题
+    string iconImage = 2; //icon的图片url
+    int32 number = 3; //icon右上角的数字
+}
+
+//物流记录
+message ExpressRecord {
+    string updateTime = 1; //物流更新时间
+    string content = 2; //更新事件内容
+}
+//物流item
+message ExpressItem {
+    string itemTitle = 1; //"卖家发往平台" "平台质检鉴定" "交易成功"/“平台寄回卖家”
+    bool itemState = 2; //点亮状态/置灰状态
+    bool hasDetail = 3; //物流状态是否存在物流详情
+    string expressCompany = 4; //物流公司
+    string expressNumber = 5; //物流单号
+    repeated ExpressRecord records = 6; //物流记录
+}
+
+//订单系统按钮
+message OrderButton {
+    OrderButtonEnum buttonEnum = 1;
+    string buttonTitle = 2;
+}
+
+// 钱包提现流水
+message RunningCount {
+    WalletRunningCountTypeEnum flowType = 1; // 0：全部，1：货款收入，2：提现）
+    string title = 2; // 名称
+    string dateTime = 3; // 日期时间（非时间戳）
+    int32 amount = 4; // 流水金额（分）
+    string orderID = 5; // 交易相关的订单号
+}
+
+message HotBrandInfo {
+    int32 brandID = 1;
+    string brandName = 2;
+    string imageUrl = 3;
+}
+
+// 商品入库小工具详情
+message ProductUtilsItem {
+    int32 serialNumber = 1;     // 序号
+    string skc = 2;             // Skc
+    string productName = 3;     // 商品标题
+    string mainPic = 4;         // 商品对应主图
+    string kindName = 5;        // 品类名称
+    string brandName = 6;       // 品牌英文名称
+    string seriesName = 7;      // 系列名称
+    string colorName = 8;       // 颜色名称
+    string measurement = 9;     // 尺寸名称
+    string adaptCrowd = 10;     // 适用人群
+    string oldNew = 11;         // 新旧
+    string provenance = 12;     // 产地
+    string styleName = 13;      // 风格名称
+    string materialName = 14;   // 材质名称
+    string sizeName = 15;       // 尺码
+    string releasePrice = 16;   // 上市价格
+    string inStoreTime = 17;    // 上市时间
+    string itemID = 18;         // 货号
+    string status = 19;         // 入库状态   2已录入 1待录入 3 已重复
+    int32 brandID = 20;         // 品牌ID
+    string currentSkc = 21;         // 正式表的skc
+}
+
+// 商品发布列表
+message SearchMallPublishItem {
+    string sku = 1; // sku
+    string mainPic = 2; // sku图
+    string colorName = 3; // 颜色
+    string measurement = 4;     // 尺寸名称
+    string brandEnName = 5; // 品牌英文名称
+    string productName = 6; // 商品名称
+    string brandName = 7; // 品牌名称
+    string sizeName = 8; // 尺码
+}
+
+//识别出的对象
+message NewClassifiedObject {
+    string mainPic = 1;  // 商品封面图
+    string brandEnName = 2;  // 品牌名称
+    string productName = 3;  // 商品名称
+    string releasePrice = 4;  // 官方价
+    string sku = 5;  // sku
+    string sizeName = 6; // 尺码
+    string colorName = 7; // 颜色名称
+    string measurement = 8; // 尺寸名称
+    string brandID = 9;// 品牌ID
+    string kindID = 10;// 品类ID
+
+}
+
+message ProductPidObject {
+    string cover = 1;  // 商品封面图
+    string newsName = 2;  // 成色名称
+    string brandEnName = 3;  // 品牌名称
+    string productName = 4;  // 商品名称
+    string releasePrice = 5;  // 官方价
+    string actualPrice = 6;  // 出售价
+    string sku = 7;  // sku
+    string pid = 8;  // pid
+}
+
+
+
+// 抽奖池信息
+message LotteryPoolItem {
+    int32 lotteryPoolId = 1;  // 抽奖池ID
+    string name = 2; // 活动名称
+    string lotteryPoolPic = 3; // 奖品池图片
+    string startTime = 4; // 开始时间
+    string endTime = 5; // 结束时间
+    string lotteryStatus = 6; // 抽奖状态
+    string status = 7; // 生效状态
+    string createTime = 8; // 创建时间
+    int32 lotteryNum = 9; // 抽奖次数
+}
+
+// 抽奖用户池
+message UserPoolItem {
+    int32 userPoolId = 1;
+    string phone = 2; // 手机号
+    string status = 3; // 状态
+}
+
+// 指纹库
+message FingerprintItem {
+    int32 id = 1; // 序号
+    string phone = 2; // 手机号
+    string mainPic = 3; // 主图
+    string numberIDCard = 4; // 身份证号
+    string createTime = 5; // 录入时间
+}

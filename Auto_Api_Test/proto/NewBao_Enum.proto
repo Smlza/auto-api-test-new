@@ -1,0 +1,128 @@
+//新包包后台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+
+syntax = "proto3";
+package proto;
+
+option go_package = ".;proto";
+
+enum UserType {
+    ORDINARYUSER = 0;
+    SMALLBUSSINESS = 1;
+    ENTERPRISE = 2;
+    STAFF = 3;
+    TESTUSER = 4;
+}
+
+enum LoginType {
+    WECHAT = 0;
+    WEIBO = 1;
+    APPLE = 2;
+}
+
+enum SelectedProductListEnum {
+    SelectedProductListEnum_Default = 0;
+    SelectedProductListEnum_PriceAscending = 1; //价格从低往高 升序
+    SelectedProductListEnum_PriceDescending = 2; //价格从高往低 降序
+    SelectedProductListEnum_NewProductFirst = 3; //新品优先
+}
+
+//卖家商品状态
+enum SellerProductStateEnum {
+    SellerProductStateEnum_ToBeBid = 0; // 待出价
+    SellerProductStateEnum_OnSale = 1; //出售中
+    SellerProductStateEnum_SoldOut = 2; //已出售
+    SellerProductStateEnum_TemporaryClosed = 3; //暂时下架
+    SellerProductStateEnum_FavoriteClosed = 4; //永久下架
+}
+
+//多级分类
+enum CategoryEnum {
+    CategoryEnum_Kind = 0;
+    CategoryEnum_Brand = 1;
+    CategoryEnum_Series = 2;
+}
+
+//买家订单状态（买家订单状态）
+enum BuyerOrderStateEnum {
+    BuyerOrderStateEnum_ToBePaid = 0; //待付款
+    BuyerOrderStateEnum_ToBeDelivered = 1; //待发货
+    BuyerOrderStateEnum_ToBeReceived = 2; //待收货
+    BuyerOrderStateEnum_SuccessfulTrade = 3; //交易成功
+    BuyerOrderStateEnum_FailedTrade = 4; //交易失败
+};
+
+//买家订单状态（买家订单列表状态）
+enum BuyerOrderListStateEnum {
+    BuyerOrderListStateEnum_ToBePaid = 0; //待付款 ---待付款
+    BuyerOrderListStateEnum_SellerToDeliver = 1; //待卖家发货 ---待发货
+    BuyerOrderListStateEnum_DeliverToPlatform = 2; //卖家发往平台 ---待收货
+    BuyerOrderListStateEnum_PlatformReceived = 3; //平台已收货 ---待收货
+    BuyerOrderListStateEnum_PlatformAppraisal = 4; //平台鉴定中 ---待收货
+    BuyerOrderListStateEnum_PlatformToDeliver = 5; //待平台发货 ---待收货
+    BuyerOrderListStateEnum_PlatformHaDelivered = 6; //平台已发货 ---待收货
+    BuyerOrderListStateEnum_SuccessfulTrade = 7; //交易成功 ---交易成功
+    BuyerOrderListStateEnum_FailedTrade = 8; //交易失败 ---交易失败
+}
+
+//卖家订单状态（未交易前，即出售中为商品状态）
+enum SellerOrderStateEnum {
+    SellerOrderStateEnum_OnSale = 0; //出售中（商品状态，见NewBao_Product文件）
+    SellerOrderStateEnum_ToBeDelivered = 1; //待发货
+    SellerOrderStateEnum_HadDelivered = 2; //已发货
+    SellerOrderStateEnum_SuccessfulTrade = 3; //交易成功
+    SellerOrderStateEnum_FailedTrade = 4; //交易失败
+};
+
+//卖家订单状态（卖家订单列表状态）
+enum SellerOrderListStateEnum {
+    SellerOrderListStateEnum_ToBePaid = 0; // 待买家付款 ---待发货
+    SellerOrderListStateEnum_ToBeDeliver = 1; //待发货 ---待发货
+    SellerOrderListStateEnum_DeliverToPlatform = 2; //卖家发往平台 ---已发货
+    SellerOrderListStateEnum_PlatformReceived = 3; //平台已收货 ---已发货
+    SellerOrderListStateEnum_PlatformAppraisal = 4; //平台鉴定中 ---已发货
+    SellerOrderListStateEnum_SuccessfulTrade = 5; //交易成功 ---交易成功
+    SellerOrderListStateEnum_FailedTrade = 6; //交易失败 ---交易失败
+}
+
+enum ProductSellStateEnum {
+    ProductionSellStateEnum_Default = 0; //商品正常销售
+    ProductionSellStateEnum_InTransaction = 1; //商品销售中
+    ProductionSellStateEnum_SoldOut = 2; //商品已出售
+}
+
+enum OrderButtonEnum {
+    OrderButtonEnum_Closed = 0; //商品管理 --  下架
+    OrderButtonEnum_AddOAID = 1; //商品管理 -- 商品关联鉴定
+    OrderButtonEnum_RenewOAID = 2; ///商品管理 -- 商品重新关联鉴定
+    OrderButtonEnum_Offer = 3; ///商品管理 -- 商品出价
+    OrderButtonEnum_PutOnShelf = 4; ///商品管理 -- 商品上架
+    OrderButtonEnum_Delete = 5; // 删除
+    OrderButtonEnum_Detail = 6; // 查看详情
+    OrderButtonEnum_WannaDeliver = 7; // 我要发货
+    OrderButtonEnum_NotSell = 8; // 不卖了
+    OrderButtonEnum_Express = 9; // 查看物流
+    OrderButtonEnum_Pay = 10; // 立即支付
+    OrderButtonEnum_CancelOrder = 11; //取消订单
+    OrderButtonEnum_ConfirmAddress = 12; //确认收货
+    OrderButtonEnum_Edit = 13; // 编辑
+}
+
+enum WalletRunningCountTypeEnum {
+    WalletRunningCountTypeEnum_All = 0; // 全部
+    WalletRunningCountTypeEnum_Income = 1; // 货款（收入）
+    WalletRunningCountTypeEnum_Withdraw = 2; // 提现
+}
+
+enum AIServiceAppraisalOrderStateEnum {
+    AIServiceAppraisalOrderStateEnum_All = 0; // 全部
+    AIServiceAppraisalOrderStateEnum_Unpaid = 1; // 待付款
+    AIServiceAppraisalOrderStateEnum_True = 2; // 鉴定为真
+    AIServiceAppraisalOrderStateEnum_False = 3; // 鉴定为假
+    AIServiceAppraisalOrderStateEnum_Unknown = 4; // 未知的鉴定结果
+}

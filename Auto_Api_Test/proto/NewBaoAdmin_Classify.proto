@@ -1,0 +1,38 @@
+// 新包包识别服务 网络协议
+// 
+// 网络协议按模块划分
+//
+
+
+syntax = "proto3";
+package proto;
+
+
+option go_package = ".;proto";
+
+// 联调地址：http://47.102.37.210:8888
+
+
+// AI识包记录接口 POST /classify/v1/admin/classifyRecordList
+message TSAdminClassifyRecordListRequest {
+    string mobile = 1;  // 可选，默认为空，11位
+    string classifyResult = 2;  // 可选1-检测失败，2-匹配失败，3-匹配成功，默认为0-所有值
+    int32 pageNum = 3;  // 可选 页码 默认为1，小于零为首页，大于末页时为末页
+    int32 pageSize = 4;  // 可选 每页展示条数 默认为10
+}
+message ClassifyRecordItem{
+    int32 id = 1;  // 序号
+    string mobile = 2;  // 手机号，可能为空
+    string imageUrl = 3;  // 图片URL
+    string createTime = 4; // 鉴定时间 格式 YYYY-mm-dd HH:MM:SS
+    string classifyResult = 5;  // 匹配结果 （检测失败="1" 匹配失败="2" 匹配成功="3"）
+    string feedback = 6;  // 反馈情况，可能为空
+    string skc = 7;  
+    string product = 8;  // 商品名称，可能为空
+}
+message TSAdminClassifyRecordListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated ClassifyRecordItem classifyRecordList = 3;  // 可选，err_code=0时，返回商品列表
+    int32 totalCount = 4;  // 可选，如果是0就没有这个字段
+}

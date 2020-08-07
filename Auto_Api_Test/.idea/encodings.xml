@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/NewBaoAdmin_Appraisal_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBaoAdmin_BaseInfoManagement_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBaoAdmin_Common_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBaoAdmin_Enum_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBaoAdmin_ShopMall_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBao_AIService_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBao_Activity_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBao_Common_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBao_Enum_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBao_Lottery_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBao_Order_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBao_Product_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBao_User_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/NewBao_Wall_pb2.py" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/pbjson.py" charset="GBK" />
+  </component>
+</project>

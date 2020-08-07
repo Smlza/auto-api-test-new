@@ -1,0 +1,399 @@
+//新包包后台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+syntax = "proto3";
+package proto;
+
+import "NewBao_Common.proto";
+import "NewBao_Enum.proto";
+
+option go_package = ".;proto";
+
+//商品发布页信息请求 POST @token_required /product/publishPage
+message TSPublishProductInfoRequest {
+}
+message TSPublishProductInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string serviceCharge = 3; //服务费比例
+    string transferFeeRate = 4; //支付手续费比例
+    repeated CategoryInfo categoryInfo = 5; //对应品类 固定只返回一个包品类
+    repeated PointInfo pointInfo = 6;
+    UserAddress userAddress = 7; //若用户默认地址
+}
+
+//商品图片上传接口 需要接入鉴黄接口 POST /product/uploadImage
+message TSProductImageUploadRequest {
+    string imgB64 = 1;
+}
+message TSProductImageUploadResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string imageUrl = 3;
+}
+
+// 商品品类信息 POST /product/kindInfoList
+message TSProductKindListRequest {
+}
+message TSProductKindListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated KindInfo kindList = 3;
+}
+
+//商品品牌请求  POST /product/brandInfoList
+message TSProductBrandRequest {
+    int32 kindID = 1; //品类id
+}
+message TSProductBrandResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated BrandInitial brandInitial = 3;
+    repeated HotBrandInfo hotBrandList = 4;
+}
+
+//商品成色请求  POST /product/newDegreeInfoList
+message TSProductNewsRequest {
+    int32 kindID = 1; //品类Key
+}
+message TSProductNewsResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated NewsInfo news = 3; //成色
+}
+
+//商品尺码请求 POST /product/sizeInfoList
+message TSProductSizeListRequest {
+    int32 kindID = 1;
+}
+message TSProductSizeListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SizeInfo sizeList = 3; //成色
+}
+
+//商品颜色请求 POST /product/colorInfoList
+message TSProductColorListRequest {
+}
+message TSProductColorListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated ColorInfo colorList = 3; //颜色
+}
+
+//商品包尔摩斯接口 POST /product/classify
+message TSProductHolmesRequest {
+    int32 brandID = 1; //品牌id
+    string exteriorUrl = 2; //外观图片数据
+}
+message TSProductHolmesResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated ClassifiedObject objects = 3; //包尔摩斯结果
+}
+
+//商品包尔摩斯识别失败或用户找不到自己的商品，用户需要加载商品列表 POST /product/unidentifiedList
+message TSProductListRequest {
+    int32 kindID = 1;
+    int32 brandID = 2;
+    int32 pageSize = 3; // 默认为10
+    int32 pageNum = 4; // 默认为1
+}
+message TSProductListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated ClassifiedObject objects = 3;
+    bool isEnd = 4;
+}
+
+//商品包尔摩斯搜索后反馈问题 @token_required POST /product/feedback
+message TSBaoermosFeedbackRequest {
+    string productName = 1; //反馈无法识别的商品名称 必填
+    string productItemID = 2; //反馈
+}
+message TSBaoermosFeedbackResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+
+}
+
+//商品发布接口 @token_required POST /product/publish
+message TSPublishProductRequest {
+    string itemID = 1; //挂载货号 需要后端进行校验 ---- deprecated from 商城二期-商品发布优化 skc由sku查到
+    string newsName = 2; //前端做校验
+    int32 newsID = 3; //前端做校验 不能为空
+    repeated string images = 4; //用户上传的图 必须大于0 不能超过20个 ---- deprecated from 商城二期-商品发布优化
+    string sendWord = 5; //用户寄语 需要检测是否合格，不超过1000个字符
+    bool onSell = 6; //是否出售 ---- deprecated from 商城二期-商品发布优化 不做暂不出售
+    int32 sellPrice = 7; //售卖价格，必须为整型，且大于0小于一亿。当onSell=Yes，该值不可为空
+    int32 returnAddressID = 8; //卖家寄回地址，当onSell=Yes，该值不可为空
+    string sku = 9; //挂载sku 需要后端进行校验，临时发布时为空串
+    string productName = 10; // 商品名，限长100，临时发布时必填，即sku为空串
+    string attribute = 11; // 颜色/材质/花色/款式，限长100，临时发布时必填，即sku为空串
+    repeated ShootImageInfo imageList = 12; // 从 商城二期-商品发布优化 启用，替代参数4 ---- add from 1.3
+    int32 kindID = 13; // from 商城二期-商品发布优化 带上kindID 临时发布时要记录kind信息
+    int32 brandID = 14; // from 商城二期-商品发布优化 带上brandID 同kindID
+}
+message TSPublishProductResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string pid = 3; //商品pid
+}
+
+//商品绑定鉴定号 @token_required POST /product/bindOAID
+message TSProductBindOAIDRequest {
+    string pid = 1;
+    string oaid = 2;
+}
+message TSProductBindOAIDResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//精选页详情 POST /product/bannerList
+message TSSelectedPageRequest {
+}
+message TSSelectedPageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated CarouselItem items = 3;
+    int32 kindID = 4; //筛选页默认的品类的kindID
+}
+
+//精选页筛选列表请求 POST /product/selectedFilterInfo
+message TSSelectedFilterInfoRequest {
+    int32 kindID = 1;
+}
+message TSSelectedFilterInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated NewsInfo newsInfo = 3; //筛选页成色数组
+    repeated SizeInfo sizeInfo = 4; //筛选页尺码数组
+}
+
+//精选页商品列表 POST /product/selectedProductList
+message TSSelectedProductListRequest {
+    int32 pageSize = 1; // 默认为10
+    int32 pageNum = 2; // 默认为1
+    SelectedProductListEnum queryEnum = 3; //请求类型
+    repeated int32 kindIDList = 4; //筛选的品类ID 可选
+    repeated int32 brandIDList = 5; //筛选品牌ID 可选
+    int32 priceStartPoint = 6; //价格起始点 默认为0 可选
+    int32 priceEndPoint = 7; //价格结束 点默认为1，0000，0000 可选
+    repeated int32 newsIDList = 8; //成色
+    repeated int32 sizeIDList = 9; //尺码
+}
+message TSSelectedProductListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SelectedProductInfo selectedProductInfo = 3;
+    bool isEnd = 4;
+}
+
+//商品详情页信息 @token_optional POST /product/selectedProductDetail
+message TSProductDetailPageRequest {
+    string pid = 1;
+}
+message TSProductDetailPageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    ProductUserUpload productUserUpload = 3;
+    ProductBasicInfo productBasicInfo = 4;
+    string nickName = 5;
+    string avatar = 6;
+    bool hasCollected = 7; //是否已经收藏
+    string sellState = 8; //商品销售状态
+    int32 sellerId = 9;
+    int32 onSaleCount = 10; // 在售数
+    int32 tradeCount = 11; // 成交数
+
+    message RecommendProduct {
+        string pid = 1;
+        string cover = 2; // 用户拍摄主图
+        string newDegree = 3; // 成色
+        int32 sellPrice = 4; // 出售价
+        int32 releasePrice = 5; // 发行价
+        string title = 6; // 商品名
+    }
+
+    repeated RecommendProduct productList = 12; // 推荐商品，按权重给9个
+}
+
+// 商品收藏 @token_required POST /product/collect
+message TSCollectProductRequest {
+    string pid = 1;
+    string changeMode = 2; // "do"为收藏，"cancel"为取消收藏
+}
+message TSCollectProductResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 我的收藏记录 @token_required POST /product/collectList
+message TSCollectProductListRequest {
+    int32 pageSize = 1;
+    int32 pageNum = 2;
+}
+message TSCollectProductListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SelectedProductInfo selectedProductInfo = 3;
+    bool isEnd = 4;
+}
+
+//确认订单页 @token_required POST /product/confirmOrderPage
+message TSProductConfirmOrderPageRequest {
+    string pid = 1;
+}
+message TSProductConfirmOrderPageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    UserAddress address = 3; //买家购买地址
+    ProductBasicInfo productBasicInfo = 4; //商品订单信息
+    int32 expressFee = 5; //运费
+}
+
+//运费接口 POST /product/calExpressFee
+message TSQueryExpressChargeRequest {
+    string province = 1; //省
+}
+message TSQueryExpressChargeResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 expressFee = 3; //运费
+}
+
+//我的出售 出售列表查询 @token_required POST /product/toSellList
+message TSSellerQueryProductListRequest {
+    int32 pageNum = 1; // 默认为1
+    int32 pageSize = 2; // 默认为10
+}
+message TSSellerQueryProductListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SellerBriefProductInfo productInfos = 3; //SellerBriefProductInfo
+    bool isEnd = 4;
+}
+
+// 商品出售详情页面 @token_required POST /product/bidDetail
+message TSSellerBidDetailRequest {
+    string pid = 1; //商品pid
+}
+message TSSellerBidDetailResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    SellerProductDetailInfo productInfo = 3;
+}
+
+// 商品出售详情页面-编辑跳转商品发布带出信息 @token_required POST /product/onSalePublishInfo
+message TSProductOnSalePublishInfoRequest {
+    string pid = 1; // 商品pid
+}
+message TSProductOnSalePublishInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    ProductOnSalePublishInfo publishInfo = 3;
+}
+
+// 商品出售详情页面-编辑跳转商品发布带出信息-编辑 @token_required POST /product/onSaleEdit
+message TSEditProductOnSaleRequest {
+    string pid = 1;
+    repeated ShootImageInfo imageList = 2;
+    string sku = 3;
+    int32 newDegreeID = 4;
+    string sendWord = 5;
+    int32 sellPrice = 6;
+    int32 backAddressID = 7;
+}
+message TSEditProductOnSaleResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 商品出价页面 @token_require POST /product/bidInfo
+message TSSellerBidInfoRequest {
+    string pid = 1; //商品pid
+}
+message TSSellerBidInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string serviceChargeRate = 3; //服务费比例
+    string transferFeeRate = 4; //支付手续费比例
+    UserAddress returnAddress = 5; //卖家寄回地址
+}
+
+//商品出价 @token_require POST /product/sellerBid
+message TSSellerBidRequest {
+    string pid = 1; //商品pid
+    int32 returnAddressID = 2; //卖家寄回地址
+    int32 price = 3; //出价价格
+}
+message TSSellerBidResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 卖家-商品下架请求 @token_required POST /product/downBySeller
+message TSSellerTakeProductOffShelvesRequest {
+    string pid = 1; //商品pid 商品状态为待出价、出售中可下架 其余状态不可修改
+}
+message TSSellerTakeProductOffShelvesResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 卖家-商品上架请求 @token_required POST /product/upBySeller
+message TSSellerUpProductRequest {
+    string pid = 1; // 商品pid 商品状态为临时下架时可修改
+}
+message TSSellerUpProductResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 卖家-商品修改地址 @token_required POST /product/sellerAddress
+message TSSellerChangeReturnAddressRequest {
+    string pid = 1; //商品pid 商品状态为出售中、已出售可修改卖家寄回地址 其余状态不可修改
+    int32 addressID = 2;
+}
+message TSSellerChangeReturnAddressResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 卖家-删除商品 @token_required POST /product/delBySeller
+message TSSellerDeleteProductRequest {
+    string pid = 1;
+}
+message TSSellerDeleteProductResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//商品包尔摩斯接口 POST /product/newClassify 新接口
+message TSProductNewHolmesRequest {
+    string imgB64 = 1; //外观图片数据
+}
+message TSProductNewHolmesResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    NewClassifiedObject objects = 3; //包尔摩斯结果
+    repeated ProductPidObject productInfo = 4; //Pid商品数据
+    bool hasMatch = 5;
+    int32 logId = 6; // 查询记录id 用来反馈记录
+}
+
+// 反馈问题  POST /product/productFeedback
+message ProductFeedbackQuestionRequest {
+    int32 logId = 1; // 商品封面图
+    string feedback = 2; // 用户反馈
+}
+
+message ProductFeedbackQuestionResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}

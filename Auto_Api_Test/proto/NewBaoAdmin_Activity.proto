@@ -1,0 +1,39 @@
+//新包包运营管理台 网络协议
+//
+//活动模块
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+syntax = "proto3";
+package proto;
+
+import "NewBaoAdmin_Common.proto";
+option go_package = ".;proto";
+
+// 运营管理台七夕活动积分记录查询 POST /admin/doubleSeventhScore
+message TSAdminDoubleSeventhScoreRequest {
+    string phoneNum = 1; // 用户手机号
+    int32 pageNum = 2; // 页码 默认为1 可选
+    int32 pageSize = 3; // 每页展示条数 默认为10 可选
+}
+message TSAdminDoubleSeventhScoreResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 uid = 3;
+    string phoneNum = 4; 
+    string nickname = 5;
+    int32 currentScore = 6; 
+    repeated AdminDoubleSeventhScoreRecord scoreRecordList = 7;
+    int32 totalCount = 8;
+}
+
+// 运营管理台七夕活动积分增加 POST /admin/doubleSeventhScoreAdd
+message TSAdminDoubleSeventhScoreAddRequest {
+    int32 uid = 1; 
+    int32 updateScore = 2; // 积分
+}
+message TSAdminDoubleSeventhScoreAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}

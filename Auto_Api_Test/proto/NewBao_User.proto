@@ -1,0 +1,360 @@
+//新包包后台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+
+syntax = "proto3";
+package proto;
+import "NewBao_Common.proto";
+import "NewBao_Enum.proto";
+
+option go_package = ".;proto";
+
+// 手机号登录 若无uid先注册 POST /account/phoneSignIn
+message TSLogInRequest {
+    string phone = 1; //手机号码
+    string sms = 2; //验证码
+}
+message TSLogInResponse {
+    int32 errorCode = 1; // 手机号不正确/验证码不正确/验证码过期
+    string errorMsg = 2;
+    User user = 3;
+    string token = 4;
+    bool isSelected = 5;
+}
+
+//小程序获取UnionID接口 POST /account/code2Session
+message TSCode2SessionRequest {
+    string code = 1;
+}
+message TSCode2SessionResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string openid = 3;
+    string session_key = 4;
+    string unionid = 5;
+}
+
+// 小程序从加密数据中获取UnionID POST /account/miniUnionID
+message TSMiniProgramGetUnionIDRequest {
+    string code = 1;
+    string encryptedData = 2;
+    string iv = 3;
+}
+message TSMiniProgramGetUnionIDResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string unionid = 3;
+}
+
+//小程序登录 POST /account/miniLogIn
+message TSMiniProgramLogInRequest {
+    string unionID = 1;
+}
+message TSMiniProgramLogInResponse {
+    int32 errorCode = 1; //0是正常 用户不存在10009/用户未绑定手机号10010
+    string errorMsg = 2;
+    User user = 3; //用户结构体
+    string token = 4; //请求时的accessToken
+    bool isSelected = 5; //暂时不用
+}
+
+// 新小程序登录，合并TSMiniProgramGetUnionIDRequest和TSMiniProgramLogInRequest POST /account/microLogin
+message TSMicroAppLoginRequest {
+    string code = 1;
+    string encryptedData = 2;
+    string iv = 3;
+    string avatar = 4; // 老用户没有设置头像的话，更新头像
+    string nickname = 5; // 老用户没有设置昵称的话，更新昵称
+}
+message TSMicroAppLoginResponse {
+    int32 errorCode = 1; //0是正常 用户不存在10009/用户未绑定手机号10010
+    string errorMsg = 2;
+    User user = 3; //用户结构体
+    string token = 4; //请求时的accessToken
+    string unionId = 5;
+}
+
+//小程序获取手机号 POST /account/miniPhone
+message TSMiniProgramGetPhoneRequest {
+    string code = 1;
+    string encryptedData = 2;
+    string iv = 3;
+}
+message TSMiniProgramGetPhoneResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string phone = 3;
+}
+
+// 小程序绑定手机号 POST /account/miniRegister
+message TSMiniProgramRegisterRequest {
+    string phone = 1;
+    string unionID = 2;
+    enum RegisterType {
+        WECAHT_DEFAULT = 0; // 默认：微信小程序注册
+        WECAHT_WAVE_SISTER = 1; // 小程序：乘风破浪姐姐活动
+        WECHAT_APPRAISAL_WELCOME = 2; // 小程序: 鉴定邀新活动
+        WECHAT_DOUBLE_SEVENTH_WELCOME = 3; // 小程序: 七夕邀新活动
+    }
+    RegisterType bussinessType = 3; // 注册来源
+    string inviteKey = 4; // 邀新活动邀请码
+    string avatar = 5; // 老用户没有设置头像的话，更新头像
+    string nickname = 6; // 老用户没有设置昵称的话，更新昵称
+}
+message TSMiniProgramRegisterResponse {
+    int32 errorCode = 1; //0是正常
+    string errorMsg = 2;
+    User user = 3; //用户结构体
+    string token = 4; //请求时的accessToken
+    bool isSelected = 5; //暂时不用
+}
+
+// 注销账号 @token_required 
+message TSLogOffRequest {
+}
+message TTSLogOffResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 退出登录 token失效 @token_required POST /account/logOut
+message TSLogOutRequest {
+}
+message TSLogOutResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// token续期 @token_required POST /account/renewToken
+message TSTokenRenewRequest {
+}
+message TSTokenRenewResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string token = 3;
+}
+
+// 验证码请求 POST /account/sendSms
+message TSSendSmsCodeRequest {
+    string phone = 1; //手机号码
+}
+message TSSendSmsCodeResponse {
+    int32 errorCode = 1; // 1分钟内已请求过/阿里云短信调用故障
+    string errorMsg = 2;
+}
+
+// 第三方登录 POST /account/thirdPartyLogIn
+message TSThirdPartyLoginRequest {
+    LoginType loginType = 1; // 第三方登录方式
+    string bindID = 2; // 绑定的对应平台的ID
+}
+message TSThirdPartyLoginResponse {
+    int32 errorCode = 1; // 不存在uid/未绑定phone
+    string errorMsg = 2;
+    User user = 3; //若存在uid且已绑定phone
+    string token = 4;
+    bool isSelected = 5;
+}
+
+// 第三方账号绑定手机号 若无uid先注册 POST /account/bindPhone
+message TSBindPhoneRequest {
+    LoginType loginType = 1; // 第三方登录方式
+    string bindID = 2; // 绑定的对应平台的ID
+    string phone = 3; //手机号码
+    string sms = 4; //验证码
+    string nickname = 5; //若为新用户 生成用户时用第三方昵称
+    string avatar = 6; //若为新用户 生成用户时用第三方头像
+}
+message TSBindPhoneResponse {
+    int32 errorCode = 1; // 手机号不正确/验证码不正确/验证码过期/手机号已绑定
+    string errorMsg = 2;
+    User user = 3;
+    string token = 4;
+    bool isSelected = 5;
+}
+
+// 账号安全页请求 @token required POST /account/securityPage
+message TSAccountSecurityPageRequest {
+}
+message TSAccountSecurityPageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string phone = 3;
+    bool wechatBound = 4;
+    bool weiboBound = 5;
+    bool appleBound = 6;
+}
+
+// 账号安全页 - 第三方绑定 @token required POST /account/thirdPartyBind
+message TSThirdPartyBindRequest {
+    LoginType loginType = 1; // 第三方登录方式
+    string bindID = 2; // 绑定的对应平台的ID
+    string changeMode = 3; // ’bind‘ & 'remove'
+}
+message TSThirdPartyBindResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 账号安全页 - 手机号换绑 - 验证手机号获取验证码 @token required POST /account/verifyPhoneSms
+message TSVerifyPhoneSMSCodeRequest {
+}
+message TSVerifyPhoneSMSCodeResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 账号安全页 - 手机号换绑 - 验证手机号 @token required POST /account/verifyPhone
+message TSVerifyPhoneRequest {
+    string sms = 1; //验证码
+}
+message TSVerifyPhoneResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 账号安全页 - 手机号换绑 - 验证新绑定的手机号是否合法，合法则发送验证码 @token_required POST /account/checkNewPhone
+message TSCheckNewPhoneRequest {
+    string phone = 1; //手机号码
+}
+message TSCheckNewPhoneResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 账号安全页 - 手机号换绑 - 绑定新手机号 @token required POST /account/bindNewPhone
+message TSBindNewPhoneRequest {
+    string phone = 1; //手机号码
+    string sms = 2; //验证码
+}
+message TSBindNewPhoneResponse {
+    int32 errorCode = 1; //手机号不正确/验证码不正确/验证码过期/手机号已绑定无法再绑定
+    string errorMsg = 2;
+}
+
+// 个人用户修改用户信息 @token_required POST /account/userInfo
+message TSUserInfoSetRequest {
+    string avatar = 1;
+    string nickname = 2;
+    string location = 3;
+    string sex = 4; // 性别(m：男、f：女、n：未知)
+}
+message TSUserInfoSetResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    User user = 3;
+}
+
+//个人中心首页信息 @token_required POST /account/personCenterPage
+message TSPersonCenterPageRequest {
+}
+message TSPersonCenterPageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    User user = 3;
+    repeated PersonCenterIcon orderIcons = 4; //我的订单
+    repeated PersonCenterIcon sellIcons = 5; //我的出售
+    repeated PersonCenterIcon toolIcons = 6; //我的工具
+}
+
+//用户地址列表 @token_required POST /account/addressList
+message TSUserAddressListRequest {
+}
+message TSUserAddressListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated UserAddress userAddress = 3;
+}
+
+//用户编辑常用地址信息 @token_required POST /account/modifyAddress
+message TSAddUserAddressRequest {
+    UserAddress userAddress = 1;
+    string changeMode = 2; //“change” “add”
+}
+message TSAddUserAddressResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//用户删除常用地址信息 @token_required POST /account/delAddress
+message TSDeleteUserAddressRequest {
+    int32 addressID = 1; //地址id
+}
+message TSDeleteUserAddressResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//用户设置默认地址 @token_required POST /account/setDefaultAddress
+message TSSetUserDefaultAddressRequest {
+    int32 addressID = 1; //地址id
+}
+message TSSetUserDefaultAddressResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// -----------------------------
+// --------钱包相关接口-----------
+// -----------------------------
+
+// 用户钱包基础信息 @token_required POST /account/walletInfo
+message TSWalletMainInfoRequest {
+}
+message TSWalletMainInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 balance = 3; // 余额（分）
+    string alipayAccount = 4; // 支付宝账号，为空代表未绑定
+    int32 singleDayWithdrawMax = 5; // 单日提现总上限（分）
+    int32 singleDayWithdrawRest = 6; // 可提现金额（分）(当日上限金额 减 当日已提现金额)
+    bool isAlipayAccountBound = 7; // 是否已经绑定支付宝账号
+}
+
+// 绑定支付宝账号 @token_required POST /account/walletBoundAlipay
+message TSWalletBindAlipayAccountRequest {
+    string alipayAccount = 1;
+    string name = 2;
+}
+message TSWalletBindAlipayAccountResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 钱包提现获取短信验证码 @token_required POST /account/withdrawSms
+message TSWalletWithdrawVerificationCodeRequest {
+    // string phone = 1; // 手机号 (不建议提供)
+}
+message TSWalletWithdrawVerificationCodeResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string prompt = 3; // 提示 验证码已发送至您的绑定手机189*****59
+}
+
+// 钱包提现 @token_required POST /account/withdraw
+message TSWalletWithdrawRequest {
+    int32 amount = 1; // 提现金额（分）
+    string verificationCode = 2; // 短信验证码
+}
+message TSWalletWithdrawResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 钱包收支明细/流水 @token_required POST /account/walletFlow
+message TSWalletRunningCountRequest {
+    int32 pageNum = 1; // 默认为1
+    int32 pageSize = 2; // 默认为10
+    string dateMonth = 3; // 查询月份 （YYYY/MM）
+    WalletRunningCountTypeEnum flowType = 4; // 查询类型（0：全部，1：货款收入，2：提现）
+}
+message TSWalletRunningCountResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated RunningCount flowList = 3;
+    bool isEnd = 4;
+}

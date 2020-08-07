@@ -1,0 +1,67 @@
+//新包包后台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+syntax = "proto3";
+package proto;
+
+import "NewBao_Common.proto";
+option go_package = ".;proto";
+
+// 数字指纹
+// 获取数字化身份信息   POST /fingerprint/getNumberFingerprintInfo
+message TSNumberFingerprintInfoRequest {
+    string numberIDCard = 1; // 数字身份证
+}
+
+message TSNumberFingerprintInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated FingerprintInfo fingerprintInfo = 3;
+    string numberIDCard = 4; // 数字身份证
+    string mainPic = 5; // 商品主图
+}
+
+message FingerprintInfo {
+    string name = 1;  // 拍摄点名称
+    repeated PicInfo picInfo = 2;  // 图片列表
+}
+
+message PicInfo {
+    string name = 1;  // 拍摄点名称
+    string image = 2; // 图片列表
+}
+
+// 获取数字化身份信息   POST /fingerprint/getNumberFingerprintInfoList
+message TSNumberFingerprintInfoListRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string numberIDCard = 3; // 数字身份证
+    string phone = 4; // 手机号
+}
+
+message TSNumberFingerprintInfoListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated FingerprintItem fingerprintItem = 3;
+    int32 totalCount = 4;
+}
+
+// 获取数字化身份验证信息   POST /fingerprint/getNumberFingerprintCheckInfoList
+message TSNumberFingerprintCheckInfoListRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string numberIDCard = 3; // 数字身份证
+    string phone = 4; // 手机号
+    string status = 5; // 验证状态
+}
+
+message TSNumberFingerprintCheckInfoListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated FingerprintItem fingerprintItem = 3;
+    int32 totalCount = 4;
+}

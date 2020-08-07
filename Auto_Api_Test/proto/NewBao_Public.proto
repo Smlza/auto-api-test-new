@@ -1,0 +1,25 @@
+//新包包后台 网络协议
+//
+//公共模块
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+
+
+syntax = "proto3";
+package proto;
+
+option go_package = ".;proto";
+
+// 获取小程序码 POST  /public/WXAppletCode
+message TSPublicWXAppletCodeRequest {
+    string scene = 1; // 路径参数
+    string  page = 2; // 页面路径
+  }
+  
+message TSPublicWXAppletCodeResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    bytes appletCode = 3;
+  }

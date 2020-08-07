@@ -1,0 +1,57 @@
+syntax = "proto3";
+package proto;
+
+option go_package = ".;proto";
+
+enum AdminButtonEnum {
+    CancelOrder = 0;
+    ConfirmReceive = 1;
+    StartCheck = 2;
+    CheckPass = 3;
+    CheckFail = 4;
+    AppraisalPass = 5;
+    AppraisalFail = 6;
+    AppraisalRefused = 7; // 无法鉴定
+    SendBackSeller = 8;
+    SendToBuyer = 9;
+    Refund = 10; // 退款
+    Remit = 11; // 打款
+    Detail = 12; // 详情
+    GoToAdd = 13; // 去添加
+    NoProcess = 14; // 不处理
+    RemitAgain = 15; // 重新打款
+    RemitManually = 16; // 人工打款
+}
+
+//// 交易类型
+//enum TradeTypeEnum {
+//    ShoppingPayment = 0; //购物支付
+//    ShoppingRefund = 1; //购物退款
+//    AppraisalPayment = 2; //鉴定支付
+//    AppraisalRefund = 3; //鉴定退款
+//    WithdrawalFromWallet = 4; //钱包提现
+//}
+//
+//// 交易渠道
+//enum TradeChannelEnum {
+//    Alipay = 0; //支付宝
+//    WechatPhysical = 1; //微信-实物
+//    WechatVirtual = 2; //微信-虚拟
+//}
+
+//// 交易状态
+//enum TradeStateType {
+//    PaymentSuccessful = 0; //付款成功
+//    RefundSuccessful = 1; //退款成功
+//    RefundFailed = 2; //退款失败
+//    WithdrawalSuccessful = 3; //提现成功
+//    WithdrawalFailed = 4; //提现失败
+//}
+
+enum AdminPublishFeedbackEnum {
+    Default = 0; // 默认全部
+    ToBeProcessed = 1; // 待处理
+    AlreadyProcessed = 2; // 已处理
+    NotProcessTemporarily = 3; // 暂不处理
+}
+

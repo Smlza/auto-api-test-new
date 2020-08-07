@@ -1,0 +1,222 @@
+//新包包后台 网络协议
+//
+//活动模块
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+
+
+syntax = "proto3";
+package proto;
+
+// import "NewBao_Common.proto";
+// import "NewBao_Enum.proto";
+
+option go_package = ".;proto";
+
+//首页活动开关 POST /activity/homePageSwitch
+message TSHomePageSwitchRequest {
+}
+
+message TSHomePageSwitchResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    bool show = 3; //开关 true/false
+    string imageUrl = 4; //写死图片URL
+    string path = 5; //写死路径
+    int32 type = 6; //标记路径类型 1:小程序本地路径 2:H5 URL
+}
+
+// 额外配置项 POST /activity/detailConfig
+message TSDetailConfigRequest {
+}
+
+message TSDetailConfigResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string demoImgUrl = 3; //示例图url
+    string miniProgramCodeUrl = 4; //小程序码
+    string publicCode = 5; //包小鉴公众号二维码
+}
+
+//姐姐匹配结果页 POST @token_required /activity/sisterMatch
+message TSSisterGenMatchResultRequest {
+    string imageUrl = 1; //用户照片URL
+    string matchImg = 2; //匹配的融合图片名，供换Pose使用
+    int32 grade = 3; //匹配分数，供换Pose使用
+    int32 num = 4; //可匹配图片数量，供换Pose使用
+}
+message TSSisterGenMatchResultResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string matchPerson = 3; //匹配的姐姐中文名
+    int32 grade = 4; //匹配的分数（百分制整数）
+    string resultUrl = 5; //融合后图片url
+    string famousQuotes = 6; //姐姐金句
+    string styleDes = 7; //风格描述
+    string matchBag = 8; //适合的包包 “适合xxx风的包包”
+    string faceDes = 9; //脸型描述 “我是X脸，与Y的相似度Z，已超过C位粉丝哦”
+    string matchImg = 10; //匹配的融合图片名，供换Pose使用
+    int32 num = 11; //可匹配图片数量，供换Pose使用
+    message RecommendedBag {
+        string brandName = 1; //品牌名称
+        string productName = 2; //商品名称
+        string releasePrice = 3; //官方发售价
+        string price = 4; //价格，以分为单位
+        string pid = 5; //pid
+        string imageUrl = 6; // 商品图片
+    }
+    RecommendedBag bag = 12;
+}
+
+// 鉴定邀新活动-页面数据 POST @token_optional /activity/appraisalEventPage
+message TSAppraisalEventPageRequest {
+
+}
+message TSAppraisalEventPageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 joinCount = 3; // 参与人数
+    int32 receivedCount = 4; // 已领取
+    int32 freeAppraisalCount = 5; // 我的免费鉴定机会
+    string button = 6; // 按钮文案
+    message InvitedFriend {
+        string avatar = 1;
+        string nickname = 2;
+        string registerTime = 3;
+    }
+    repeated InvitedFriend friends = 7;
+    int32 friendCount = 8; // 邀请朋友数
+    string buttonType = 9; // 按钮类型 "0"为领取，"1"为邀请
+    string inviteKey = 10; // 登录领取后会返回
+}
+
+// 鉴定邀新活动-领取 @token_required POST /activity/appraisalReceive
+message TSAppraisalEventReceiveRequest {
+    string inviteKey = 1; // 邀请码
+}
+message TSAppraisalEventReceiveResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 鉴定邀新活动-分享海报的数据 @token_required POST /activity/appraisalPoster
+message TSAppraisalEventPosterRequest {
+    string page = 1; // 小程序跳转的页面路径
+}
+message TSAppraisalEventPosterResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string ownerAvatar = 3; // 分享人头像
+    string shareText = 4; // 文案
+    bytes appletCode = 5; // 小程序码
+    string nickname = 6;
+}
+
+// 鉴定邀新活动-使用记录 @token_required POST /activity/couponOperateRecord
+message TSAppraisalCouponOperateRecordListRequest {
+    int32 pageSize = 1;
+    int32 pageNum = 2;
+}
+message TSAppraisalCouponOperateRecordListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    message CouponOperateRecord {
+        string content = 1;
+        string operateTime = 2;
+        string couponNo = 3;
+        string oaid = 4;
+        string friendNickname = 5;
+        string consumeCount = 6; // 消耗量，如"-1"
+        bool canJump = 7; // 是否有跳转
+    }
+    repeated CouponOperateRecord recordList = 3;
+    bool isEnd = 4;
+}
+
+
+// --------------------------------------
+// --------七夕活动小程序相关接口----------
+// --------------------------------------
+
+// 七夕活动-活动页面数据 POST /activity/doubleSeventhEventPage
+message TSDoubleSeventhEventPageRequest {
+}
+message TSDoubleSeventhEventPageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 joinCount = 3; // 参与人数
+    message Score {
+        string avatar = 1;  // 头像
+        string nickname = 2;  // 昵称
+        int32 score = 3;  // 积分
+        int32 rank = 4; // 排名
+    }
+    repeated Score scoreboard = 4;
+    bool loggedIn = 5; // 是否已登录
+    int32 myScore = 6; // 我的积分(已登录)
+    string inviteKey = 7; // 邀请码(已登录)
+    string myRank = 8; // 我的排名((已登录))
+    bool eventOn = 9; // 活动是否开启 
+}
+
+// 七夕活动-用户积分页面数据 @token_required POST /activity/doubleSeventhScorePage
+message TSDoubleSeventhScorePageRequest {
+    int32 pageSize = 1;
+    int32 pageNum = 2;
+}
+message TSDoubleSeventhScorePageResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 score = 3;  // 当前积分
+    int32 inviteCount = 4; // 已邀请人数
+    message ScoreRecord {
+        string avatar = 1;  // 头像
+        string nickname = 2;  // 昵称
+        string changeTime = 3; // 积分变更时间 格式 YYYY/mm/dd HH:MM
+        int32 changeScore = 4; // 积分变更 存在负数
+        string operateType = 5; // 积分事件名
+    }
+    repeated ScoreRecord scoreRecords = 5;  // 积分明细
+    bool isEnd = 6;
+    bool eventOn = 7; // 活动是否开启 
+}
+
+// 七夕活动-积分抽奖奖品池 POST /activity/doubleSeventhPrizePool
+message TSDoubleSeventhPrizePoolRequest {
+}
+message TSDoubleSeventhPrizePoolResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 spendScore = 3;  // 抽奖消耗的积分
+    message Prize {
+        string name = 1;  // 奖品名
+        string image = 2;  // 奖品图片url
+        int32 amount = 3; // 当前剩余量
+        int32 order = 4; // 排序
+    }
+    repeated Prize prizePool = 7;  // 奖品池
+}
+
+// 七夕活动-积分抽奖 @token_required POST /activity/doubleSeventhLottery
+message TSDoubleSeventhLotteryRequest {
+}
+message TSDoubleSeventhLotteryPoolResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    bool isWin = 3;  // 是否中奖
+    int32 score = 4; // 剩余积分
+    string prizeName = 5;  //  奖品名(中奖时)
+    string prizeImage = 6;  // 奖品图片url(中奖时)
+    int32 order = 7; // 奖品排序(中奖时)
+}
+
+// 七夕活动-活动页中奖广播 POST /activity/doubleSeventhBroadcast
+message TSDoubleSeventhBroadcastRequest {
+}
+message TSDoubleSeventhBroadcastResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated string broadcastList = 3; // 广播列表
+}

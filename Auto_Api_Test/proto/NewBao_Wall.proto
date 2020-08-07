@@ -1,0 +1,99 @@
+//新包包后台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+
+
+syntax = "proto3";
+package proto;
+
+import "NewBao_Common.proto";
+
+option go_package = ".;proto";
+
+// 包墙首页接口 POST /wall/homePage
+message TSHomePageWallFeedRequest {
+    int32 pageSize = 1;
+    int32 pageNum = 2;
+}
+message TSHomePageWallFeedResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated Wall wallList = 3;
+    bool isEnd = 4;
+}
+
+// 个人中心内-请求包墙 最多返回五个 @token_required POST /wall/personCenter
+message TSPersonCenterQueryWallRequest {
+}
+message TSPersonCenterQueryWallResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated Wall wallList = 3;
+}
+
+// 个人中心内-包墙接口 从头开始请求 @token_required POST /wall/ownWallList
+message TSQueryOwnWallRequest {
+    int32 pageNum = 1; // 默认为1
+    int32 pageSize = 2; // 默认为10
+}
+message TSQueryOwnWallResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated Wall wallList = 3;
+    bool isEnd = 4;
+}
+
+//包墙风格请求 需要过滤可用状态 POST /wall/styleList
+message TSWallStyleRequest {
+}
+message TSWallStyleResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SingleWallStyle wallStyleList = 3; //包墙种类
+}
+
+//编辑单个包墙 改风格 @token_required POST /wall/changeStyle
+message TSChangeWallStyleRequest {
+    int32 styleID = 1; //风格id
+    string wid = 2; //
+}
+message TSChangeWallStyleResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 点赞包墙 @token_required POST /wall/likeWall
+message TSLikeWallRequest {
+    string wid = 1;
+    string changeMode = 2; //"like" / "unlike"
+}
+message TSLikeWallResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 获取点赞包墙列表 @token_required POST /wall/likeWallList
+message TSLikeWallListRequest {
+    int32 pageSize = 1; // 默认为10
+    int32 pageNum = 2; // 默认为1
+}
+message TSLikeWallListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated Wall wallList = 3;
+    bool isEnd = 4;
+}
+
+// 临时新增包墙 POST /wall/addWall
+message TEMPAddWALLRequest {
+    int32 uid = 1;
+    int32 styleID = 2; //包墙风格id
+}
+message TEMPAddWALLResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}

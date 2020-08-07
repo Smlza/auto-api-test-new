@@ -1,0 +1,287 @@
+// 新包包运营管理台AI鉴定服务 网络协议
+// 
+// 网络协议按模块划分
+// 
+
+
+
+syntax = "proto3";
+package proto;
+
+import "NewBaoAdmin_Common.proto";
+option go_package = ".;proto";
+
+// 生产地址:  https://aiservice.turingsenseai.com
+// 联调地址： http://47.102.37.210:8888
+// 开发地址：
+
+// 品类查询接口 GET  /appraisal/api/v1/admin/kind_list
+message TSAdminAppraisalKindListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AppraisalKindItem kindList = 3;
+    int32 totalCount = 4;
+}
+
+// 品牌查询接口 POST  /appraisal/api/v1/admin/brand_list
+message TSAdminAppraisalBrandListRequest {
+    int32 kindID = 1;
+}
+message TSAdminAppraisalBrandListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AppraisalBrandItem brandList = 3;
+    int32 totalCount = 4;
+}
+
+// 系列查询接口 POST  /appraisal/api/v1/admin/series_list
+message TSAdminAppraisalSeriesListRequest {
+    int32 brandID = 1; 
+}
+message TSAdminAppraisalSeriesListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AppraisalSeriesItem seriesList = 3;
+    int32 totalCount = 4;
+}
+
+// 鉴定点查询请求 POST  /appraisal/api/v1/admin/point_list
+message TSAdminPointListRequest {
+    string pointName = 1; // 鉴定点名称 可选
+    string hierarchy = 2; // 鉴定层级 0 品类 1 品牌 2 系列 可选 
+    int32 kindID = 3; // 可选 
+    int32 brandID = 4; // 可选
+    int32 seriesID = 5; // 可选
+    string important = 6; // 重要层级; 0 不重要 1 重要 2 所有情况 可选
+    string status = 7; // 状态; 0 停用 1 启用 2 删除; 可选
+    int32 pageNum = 8; // 页码 默认为1 可选
+    int32 pageSize = 9; // 每页展示条数 默认为10 可选
+}
+message TSAdminPointListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 totalCount = 3;
+    repeated PointItem pointList = 4;  // 符合查询条件的鉴定点
+}
+
+// 鉴定点新增请求 POST  /appraisal/api/v1/admin/point_add
+message TSAdminPointAddRequest {
+    string pointName = 1; // 鉴定点名称 必选
+    string hierarchy = 2; // 鉴定层级 0 品类 1 品牌 2 系列 必选
+    int32 kindID = 3;  // 必选
+    int32 brandID = 4; // 可选
+    int32 seriesID = 5; // 可选
+    string pointKey = 6; // 与算法约定的鉴定点key值 必选
+    string singleKey = 7; // 与算法约定的鉴定对象key值 必选
+    string description = 8; // 拍摄规范  必选
+    int32 sequence = 9; // 排序值 必选
+    string important = 10; // 重要层级; 0 不重要 1 重要 必选
+    string stickFigureUrl = 11; // 小简笔画 必选
+    string bigStickFigureUrl = 12; // 大简笔画 必选
+    string exampleImage = 13; // 示例图 必选
+}
+message TSAdminPointAddResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 pointID = 3; // 新增的pointID 
+}
+
+// 鉴定点修改请求 POST   /appraisal/api/v1/admin/point_edit
+message TSAdminPointEditRequest {
+    string pointName = 1; // 鉴定点名称 必选
+    string hierarchy = 2; // 鉴定层级  必选
+    int32 kindID = 3; // 必选
+    int32 brandID = 4; // 可选
+    int32 seriesID = 5; // 可选
+    string pointKey = 6; // 与算法约定的鉴定点key值 必选
+    string singleKey = 7; // 与算法约定的鉴定对象key值 必选
+    string description = 8; // 拍摄规范 必选
+    int32 sequence = 9; // 排序值 必选
+    string important = 10; // 重要层级; 0 不重要 1 重要 必选
+    string stickFigureUrl = 11; // 小简笔画 必选
+    string bigStickFigureUrl = 12; // 大简笔画 必选
+    string exampleImage = 13; // 示例图 必选
+    int32 pointID = 14; // 鉴定点ID
+}
+message TSAdminPointEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 pointID = 3; // 修改的pointID 
+}
+
+// 鉴定点详情请求 POST  /appraisal/api/v1/admin/point_detail
+message TSAdminPointDetailRequest {
+    int32 pointID = 1; 
+}
+message TSAdminPointDetailResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 pointID = 3; // 鉴定点id
+    string pointName = 4; // 鉴定点
+    string hierarchy = 5; // 鉴定层级
+    int32 kindID = 6;
+    string kindName = 7;
+    int32 brandID = 8;
+    string brandName = 9;
+    int32 seriesID = 10;
+    string seriesName = 11;
+    int32 sequence = 12; // 排序值
+    string important = 13; // 重要层级 1 重要; 0 不重要
+    string status = 14; // 状态; 0 停用 1 启用 2 删除
+    string pointKey = 15; // 与算法约定的鉴定点key值
+    string singleKey = 16; // 与算法约定的鉴定对象key值 
+    string stickFigureUrl = 17; // 小简笔画 
+    string bigStickFigureUrl = 18; // 大简笔画 
+    string exampleImage = 19; // 示例图 
+    string description = 20; // 拍摄规范
+}
+
+// 鉴定点状态修改请求 POST  /appraisal/api/v1/admin/point_status
+message TSAdminPointStatusRequest {
+    int32 pointID = 1; 
+    string status = 2; // 启停状态； 0 停用 1 启用
+}
+message TSAdminPointStatusResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    bool success = 3; // 修改成功与否； True 成功 False 失败
+}
+
+// 整包鉴定记录查询请求 POST   /appraisal/api/v1/admin/oa_record_list
+message TSAdminOverallAppraisalRecordListRequest {
+    string startTime = 1; // 开始时间 （确认到时分秒，时间跨度不超过3个月）格式 YYYY-mm-dd HH:MM:SS 可选
+    string endTime = 2; // 结束时间 格式 YYYY-mm-dd HH:MM:SS 可选
+    int32 kindID = 3; // 可选
+    int32 brandID = 4; // 可选
+    int32 seriesID = 5; // 可选
+    string genuine = 6; // 鉴定真假； 0 假 1 真 2 未知 可选
+    int32 pageNum = 7; // 可选 页码 默认为1 可选
+    int32 pageSize = 8; // 可选 每页展示条数 默认为10 可选
+}
+message TSAdminOverallAppraisalRecordListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 totalCount = 3;
+    repeated OverallAppraisalRecordItem OARecordList = 4;  // 符合查询条件的鉴定点
+}
+
+// 整包鉴定记录详情请求 POST  /appraisal/api/v1/admin/oa_record_detail
+message TSAdminOverallAppraisalRecordDetailRequest {
+    int32 ID = 1; 
+}
+message TSAdminOverallAppraisalRecordDetailResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 ID = 3; // 整鉴记录id
+    string OAID = 4; // 整鉴鉴定号
+    string genuine = 5; // 鉴定结果 0 假 1 真 2 未知
+    string hierarchy = 6;
+    int32 kindID = 7;
+    string kindName = 8;
+    int32 brandID = 9;
+    string brandName = 10;
+    int32 seriesID = 11;
+    string seriesName = 12;
+    string appraisalTime = 13; // 鉴定时间 格式 YYYY-mm-dd HH:MM:SS
+    string description = 14;  // 整体评价
+    string grade = 15; // 整鉴得分
+    message SingleAppraisalRecordItem {
+        string SAID = 1; // 鉴定记录
+        string image = 2; // 鉴定图片url
+        string pointName = 3; // 鉴定点名称
+        string grade = 4; // 鉴定点得分
+    }
+    repeated SingleAppraisalRecordItem SARecordList = 16;
+}
+
+
+// ===============================baogo项目=============================== 
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+
+// 运营管理台邀新返券活动信息查询 POST  /admin/ticketActivityStatus
+message TSAdminTicketActivityStatusRequest {
+}
+message TSAdminTicketActivityStatusResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AppraisalActivityItem appraisalActivityList = 3;
+}
+
+// 运营管理台邀新返券活动修改 POST  /admin/ticketActivityStatusEdit
+message TSAdminTicketActivityStatusEditRequest {
+    string name = 1; // 活动名称
+    string jumpURL = 2; // 活动链接页面URL
+    string imageURL = 3; // 活动图片URL
+    string status = 4; // 启停状态； 0 停用 1 启用
+    int32 activityID = 5; // 活动id
+}
+message TSAdminTicketActivityStatusEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 运营管理台付费鉴定收费配置列表 POST  /admin/appraisalPriceList
+message TSAdminAppraisalPriceListRequest {
+}
+message TSAdminAppraisalPriceListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated AppraisalPriceItem appraisalPriceList = 3; // 收费配置
+}
+
+// 运营管理台付费鉴定收费配置修改 POST  /admin/appraisalPriceEdit
+message TSAdminAppraisalPriceEditRequest {
+    int32 kindID = 1; // 品类ID
+    int32 price = 2; // 付费金额 价格为分
+    string buttonText = 3; // 按钮文案
+}
+message TSAdminAppraisalPriceEditResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 运营管理台付费鉴定订单查询 POST  /admin/appraisalOrderList
+message TSAdminAppraisalOrderListRequest {
+    string OAID = 1; // 鉴定号
+    string userAccount = 2; // 用户账号
+    int32 pageNum = 3; // 可选 页码 默认为1 可选
+    int32 pageSize = 4; // 可选 每页展示条数 默认为10 可选
+}
+message TSAdminAppraisalOrderListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 totalCount = 3;
+    repeated AppraisalOrderItem appraisalOrderList = 4;  // 符合查询条件的鉴定点
+}
+
+// 运营管理台付费鉴定订单详情 POST  /admin/appraisalOrderDetail
+message TSAdminAppraisalOrderDetailRequest {
+    int32 orderID = 1; 
+}
+message TSAdminAppraisalOrderDetailResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    int32 orderID = 3; // 主键ID
+    string appraisalTime = 4; // 鉴定时间
+    string orderNo = 5;  // 鉴定订单号
+    string OAID = 6;  // 鉴定号
+    string userAccount = 7; // 用户账号
+    int32 kindID = 8;
+    string kindName = 9;
+    int32 brandID = 10;
+    string brandName = 11;
+    int32 seriesID = 12;
+    string seriesName = 13;
+    string exteriorImg = 14; // 鉴定封面图
+    int32 totalAmount = 15; // 价格单位分
+    string payWay = 16; // 支付方式
+    string payState = 17; //  付款状态 0 待付款 1 已付款
+    string result = 18; // 鉴定结果 0 假 1 真 2 未知
+    string feedback = 19; // 鉴定反馈
+    repeated AdminSingleAppraisalRecordItem SARecordList = 20;
+    string crouponNo = 21; // 鉴定券编号（支付方式为鉴定券时）
+    string description = 22; // 整体评价
+    string grade = 23; // 整体得分
+}

@@ -1,0 +1,235 @@
+//新包包后台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：https://basicinfo-test.turingsenseai.com:443
+
+syntax = "proto3";
+package proto;
+import "NewBao_Common.proto";
+import "NewBao_Enum.proto";
+
+option go_package = ".;proto";
+
+//生成订单 @token_required POST /order/genProductOrder
+message TSGenProductOrderRequest {
+    string pid = 1; //商品ID
+    int32 addressID = 2; //地址ID
+    string source = 3; //订单来源 "0"为小程序 "1"为微信App "2"为支付宝app
+}
+message TSGenProductOrderResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string orderNo = 3;
+}
+
+// 买家-支付订单(微信支付)  @token_required POST /order/wechatAppUnifiedOrder
+message TSProductPayOnWechatRequest {
+    string orderNumber = 1; //订单单号
+}
+message TSProductPayOnWechatResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string appid = 3;
+    string partnerid = 4; //商户id
+    string prepayid = 5;
+    string package = 6;
+    string nonceStr = 7;
+    string timestamp = 8;
+    string sign = 9;
+}
+
+// 买家-支付订单(微信小程序微信支付)  POST /order/wechatMiniProgramUnifiedOrder
+message TSWechatProductPayRequest {
+    string orderNumber = 1; //订单单号
+    string openid = 2; // 从code2Session接口中取
+}
+message TSWechatProductPayResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string package = 3;
+    string nonceStr = 4; //随机字符串
+    string timestamp = 5; //时间戳
+    string paySign = 6; //签名，签名方式一定要与统一下单接口使用的一致
+    string signType = 7;
+}
+
+// 买家-支付订单(支付宝支付)  POST /order/alipayAppPay
+message TSProductPayOnAliPayRequest {
+    string orderNumber = 1; //订单单号
+}
+message TSProductPayOnAliPayResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string paySign = 3;
+}
+
+//查询订单支付状态 @token_required POST /order/state
+message TSQueryProductPayResultRequest {
+    string orderNumber = 1; //订单单号
+}
+message TSQueryProductPayResultResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    BuyerOrderStateEnum state = 3;
+    BuyerOrderListStateEnum listState = 4;
+}
+
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+
+//卖家订单列表查询 @token_required POST  /order/sellerOrderList
+message TSSellerQueryOrderListRequest {
+    int32 pageNum = 1; // 默认为1
+    int32 pageSize = 2; // 默认为10
+    SellerOrderStateEnum sellerOrderState = 3; //查询的订单类型
+}
+message TSSellerQueryOrderListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SellerBriefOrderInfo orderInfos = 3; //SellerBriefOrderInfo
+    bool isEnd = 4;
+}
+
+//卖家订单详情查询 @token_required POST /order/sellerOrderDetail
+message TSSellerQueryOrderDetailInfoRequest {
+    string orderID = 1; //订单ID
+}
+message TSSellerQueryOrderDetailInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    SellerOrderDetailInfo orderDetailInfo = 3; //卖家显示的订单详情
+}
+
+//卖家订单状态操作---待发货---我要发货信息页 @token_required POST /order/sellerDeliverPage
+message TSSellerWannaDeliverInfoRequest {
+    string orderID = 1; //订单编号
+}
+message TSSellerWannaDeliverInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string addressTitle = 3; //@"鉴定中心收货地址"标题
+    UserAddress WarehouseAddress = 4; //仓库地址信息
+    string expressCompany = 5; //快递公司
+}
+
+//卖家订单状态操作---待发货---发货 @token_required POST /order/sellerDeliver
+message TSSellerWannaDeliverRequest {
+    string expressNumber = 1; //快递编号
+    string orderID = 2; //订单编号
+}
+message TSSellerWannaDeliverResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//卖家订单状态操作---待发货---不卖了 @token_required POST /order/sellerCancelSell
+message TSSellerNotSellRequest {
+    string orderID = 1; //订单编号
+}
+message TSSellerNotSellResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//卖家订单状态操作---已发货---查看物流 @token_required POST /order/sellerQueryExpress
+message TSSellerQueryExpressRequest {
+    string orderID = 1; //订单编号
+}
+message TSSellerQueryExpressResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated ExpressItem expressItems = 3; //物流状态组
+}
+
+//卖家订单状态操作---交易成功/交易失败----删除订单 @token_required POST /order/sellerDelOrder
+message TSSellerDeleteOrderRequest {
+    string orderID = 1; //订单编号
+}
+message TSSellerDeleteOrderResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+/********************************************************************/
+
+//买家订单列表查询 @token_required POST /order/buyerOrderList
+message TSBuyerQueryOrderListRequest {
+    int32 pageNum = 1; // 默认为1
+    int32 pageSize = 2; // 默认为10
+    BuyerOrderStateEnum buyerOrderState = 3; //查询的订单类型
+}
+message TSBuyerQueryOrderListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated BuyerBriefOrderInfo orderInfos = 3;
+    bool isEnd = 4;
+}
+
+//买家订单详情查询  @token_required POST /order/buyerOrderDetail
+message TSBuyerQueryOrderDetailInfoRequest {
+    string orderID = 1; //订单ID
+}
+message TSBuyerQueryOrderDetailInfoResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    BuyerOrderDetailInfo orderDetailInfo = 3; //买家显示的订单详情
+}
+
+//买家订单状态操作---待卖家发货---取消订单====需要判断冷静期 @token_required POST /order/buyerCancelOrder
+message TSBuyerCancelOrderRequest {
+    string orderID = 1; //订单ID
+}
+message TSBuyerCancelOrderResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//买家订单状态操作---待付款---立即支付
+
+//买家订单状态操作---待付款---修改收货地址 @token_required POST /order/buyerModifyAddress
+message TSBuyerChangeReceivingAddressRequest {
+    int32 addressID = 1;
+    string orderID = 2;
+}
+message TSBuyerChangeReceivingAddressResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//买家订单状态操作---已发货---查看物流 @token_required POST /order/queryBuyerExpress
+message TSBuyerQueryExpressRequest {
+    string orderID = 1; //订单编号
+}
+message TSBuyerQueryExpressResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated ExpressItem expressItems = 3; //物流状态组
+}
+
+//买家订单状态操作---交易成功/交易失败----删除订单 @token_required POST /order/buyerDelOrder
+message TSBuyerDeleteOrderRequest {
+    string orderID = 1; //订单编号
+}
+message TSBuyerDeleteOrderResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+// 买家订单状态操作-- 确认收货  @token_required POST /order/buyerConfirmReceived
+message TSBuyerConfirmReceivedRequest {
+    string orderID = 1;
+}
+message TSBuyerConfirmReceivedResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}

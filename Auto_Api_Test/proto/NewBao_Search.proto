@@ -1,0 +1,191 @@
+//新包包后台 网络协议
+//
+//网络协议按模块划分
+//
+// 生产地址:  https://baogo.turingsenseai.com
+// 联调地址： https://baogotest.turingsenseai.com
+// 开发地址：
+syntax = "proto3";
+package proto;
+
+import "NewBaoAdmin_Common.proto";
+import "NewBao_Common.proto";
+option go_package = ".;proto";
+
+// 热词管理
+// 列表(包含可选项 - 查询用) POST /search/getHotWordList
+message TSHotListRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string hotName = 3; //名称 可选
+    int32 state = 4; //状态   1 停用、2 待生效、3 生效中、4 已失效；
+    string isDefault = 5; // 是否是默认值  1 不是   2是
+    string type = 6; //   1 热搜词   2 默认词语
+}
+
+message TSHotListResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated HotItem HotList = 3;
+    int32 totalCount = 4;
+}
+
+//添加 POST /search/createHotWord
+message TSHotPostRequest {
+    string hotName = 1; // 名字
+    int32 sequence = 2; // 排序值
+    string startTime = 3; //开始时间
+    string endTime = 4; //结束时间
+    string isDefault = 5; // 是否是默认值   是否是默认值  1 不是   2是
+    string type = 6; //  1 热搜词   2 默认词语
+}
+
+message TSHotPostResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//修改 POST /search/updateHotWord
+message TSHotPutRequest {
+    string hotName = 1; // 名字
+    int32 sequence = 2; // 排序值
+    string startTime = 3; //开始时间
+    string endTime = 4; //结束时间
+    string isDefault = 5; // 是否是默认值   是否是默认值  1 不是   2是
+    int32 hotID = 6; // id
+    string type = 7; //  1 热搜词   2 默认词语
+}
+
+message TSHotPutResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//删除 POST /search/deleteHotWord
+message TSHotDeleteRequest {
+    int32 hotID = 1; // id
+}
+
+message TSHotDeleteResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//停用 POST /search/stopHotWord
+message TSHotStopRequest {
+    int32 hotID = 1; // id
+    int32 state = 2; //状态   1 停用、2 待生效、3 生效中、4 已失效；
+}
+
+message TSHotStopResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+}
+
+//获取默认词语 POST /search/getDefaultWord
+message TSHotGetRequest {
+}
+
+message TSHotGetResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    string hotWord = 3;
+}
+
+// 商城搜索   POST /search/getMallSearchList
+message TSMallSearchRequest {
+    string brandStr = 1; // 品牌ID 可以传递多个  ,隔开
+    int32 kindID = 2; //品类ID
+    string sizeStr = 3; //尺码ID
+    string newsStr = 4; //成色ID
+    int32 actualMinPrice = 5; //价格最小
+    int32 actualMaxPrice = 6; //价格最大
+    int32 pageNum = 7; //默认1
+    int32 pageSize = 8; //默认10
+    string searchQuery = 9; //搜索值
+    string sort = 10; //排序  格式 "-create_time"  create_time 上架时间  recommendation_score 默认搜索  actual_price 价格
+    string colorStr = 11; //颜色ID
+}
+
+message TSMallSearchResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SearchItem searchInfo = 3;
+    bool isEnd = 4;
+}
+
+// 推荐商品池 @token_required POST /admin/recommendProductList
+// 商品列表页，（商品名称模糊查询，PID精准查询，卖家手机号精准查询，商品状态）
+message TSMallRecommendProductListRequest {
+    string productName = 1; //商品名称
+    string pid = 2; //PID
+    string phone = 3; //卖家手机号
+    string state = 4; //商品状态，"1"出售中,"2"已出售,"3"临时下架，"4"永久下架
+    int32 pageSize = 5;
+    int32 pageNum = 6;
+}
+message TSMallRecommendProductListResponse {
+    int32 errorCode = 1; //错误码
+    string errorMsg = 2; //错误信息
+    message RecommendProductItem {
+        string pid = 1; //PID
+        string productName = 2; //商品名称
+        string size = 3; //尺码
+        string newDegree = 4; //成色
+        string phone = 5; //卖家手机号
+        string state = 6; //商品状态，"1"出售中,"2"已出售,"3"临时下架，"4"永久下架
+        int32 ranking = 7; //排序值，升序排列（值越大越靠后）
+    }
+    repeated RecommendProductItem productItem = 3;
+    int32 totalCount = 4;
+}
+
+// 根据PID检索商品信息，供新增时由PID带出商品信息用 @token_required POST /admin/recommendProductDetail
+message TSMallRecommendProductItemDetailRequest {
+    string pid = 1; //PID
+}
+message TSMallRecommendProductItemDetailResponse {
+    int32 errorCode = 1; //错误码
+    string errorMsg = 2; //错误信息
+    string productName = 3; //商品名称
+    string size = 4; //尺码
+    string newDegree = 5; //成色
+    string phone = 6; //卖家手机号
+    string state = 7; //商品状态，"1"出售中,"2"已出售,"3"临时下架，"4"永久下架
+}
+
+// 新增推荐商品 @token_required POST /admin/recommendProductAdd
+// 商品详情根据PID查询后关联插入，协议只传输PID
+message TSMallRecommendProductRegisterRequest {
+    string pid = 1; //PID
+    int32 ranking = 2; //排序值
+}
+message TSMallRecommendProductRegisterResponse {
+    int32 errorCode = 1; //错误码
+    string errorMsg = 2; //错误信息
+}
+
+// 删除推荐商品 @token_required POST /admin/recommendProductDel
+message TSMallRecommendProductItemDelRequest {
+    string pid = 1; //PID
+}
+message TSMallRecommendProductItemDelResponse {
+    int32 errorCode = 1; //错误码
+    string errorMsg = 2; //错误信息
+}
+
+// 商品发布搜索   POST /search/getGoodPublishSearchList
+message TSMallPublishSearchRequest {
+    int32 pageNum = 1; //默认1
+    int32 pageSize = 2; //默认10
+    string searchQuery = 3; //搜索值
+    int32 kindID = 4; // 品类
+    int32 brandID = 5; // 品牌
+}
+
+message TSMallPublishSearchResponse {
+    int32 errorCode = 1;
+    string errorMsg = 2;
+    repeated SearchMallPublishItem searchMallPublishInfo = 3;
+    bool isEnd = 4;
+}

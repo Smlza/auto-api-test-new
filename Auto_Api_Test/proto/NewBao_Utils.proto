@@ -1,0 +1,18 @@
+/**
+*  用于定义和业务无关的公用接口
+*  
+*/
+syntax = "proto3";
+package proto;
+
+option go_package = ".;proto";
+
+// 获取无限制数量小程序码 POST  /utils/getWxacodeUnlimit
+message TSWxacodeunlimitRequest {
+  string scene = 1; // 路径参数
+  string  page = 2; // 页面路径
+}
+
+message TSWxacodeunlimitResponse {
+  bytes imgData = 1;
+}
